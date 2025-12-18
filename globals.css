@@ -1,0 +1,50 @@
+/* globals.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* CLASE PURA CSS PARA EFECTO NEÓN */
+/* Esta clase aplica un text-shadow para simular el brillo. */
+.text-neon-glow-css {
+  /* Usamos #00FFFF (cian puro) para el brillo */
+  text-shadow: 
+    0 0 3px #00f0fd,    /* Sombra pequeña y fuerte */
+    0 0 9px #00e1ff,   /* Sombra media */
+    0 0 15px #00FFFF;   /* Sombra exterior difusa */
+}
+
+.text-neon-glow-css3 {
+  /* Usamos #00FFFF (cian puro) para el brillo */
+  text-shadow: 
+    0 0 3px #1f6eaf,    /* Sombra pequeña y fuerte */
+    0 0 9px #0491c9,   /* Sombra media */
+    0 0 15px #e2f1f8;   /* Sombra exterior difusa */
+}
