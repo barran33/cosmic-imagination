@@ -10,7 +10,7 @@ Cosmic Imagination is an advanced modular ecosystem designed to explore the inte
 A hybrid neural engine that merges **Stable Diffusion** and **Deep Dream** to manifest the unseen patterns of nature. It focuses on the generation of sacred geometric structures and organic fractal evolution.
 - **Essence:** Manifesting the divine geometry of the Cosmos.
 - **Tech Stack:** React, Python (ML), Deep Dream & Diffusion Integration.
-![Cosmic Architect Preview](https://i.ibb.co/5Zx5Ln3/duende.png)
+![Cosmic Architect Preview](https://i.ibb.co/fVbfbPkd/du3nd33623.jpg)
 
 ### 🎼 Cosmic Symphony
 **Vibration, Sound & Cymatics**
