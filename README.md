@@ -38,5 +38,20 @@ This repository is published for **portfolio and technical demonstration purpose
 - **Frontend:** Next.js 15 (App Router), TypeScript, Tailwind CSS, Framer Motion.
 - **Backend (Private):** FastAPI, Python, Hugging Face Inference, Firebase Cloud Systems.
 
+
+
+### 🌌 Divine Flow
+**Interactive Neural Flows & Quantum Geometry**
+A high-frequency visualization engine that renders dynamic particle systems based on sacred geometry.
+
+* **Resonance Mode:** Sacred Geometry Mandala visualization.
+* **Singularity Mode:** High-energy quantum density simulation.
+* **Entanglement Mode:** Node-link neural connectivity.
+
+#### Visual Showcase
+| Normal Mode | Resonance Mode | Singularity Mode |
+| :---: | :---: | :---: |
+| ![Normal](https://i.ibb.co/8LSzPf4n/Captura-de-pantalla-2026-02-17-a-la-s-8-16-31-a-m.png) | ![Resonance](https://i.ibb.co/dw3qDvFv/Captura-de-pantalla-2026-02-17-a-la-s-8-15-51-a-m.png) | ![Entanglement](https://i.ibb.co/9m0z0w6P/Captura-de-pantalla-2026-02-17-a-la-s-8-17-04-a-m.png) |
+
 ---
 *Exploring our galaxy of projects... designed for those who seek to bridge the gap between technology and the Infinite.*
