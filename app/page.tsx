@@ -60,7 +60,7 @@ const projectData = [
   { 
     title: "Divine Flow", 
     tagline: "Sistema de Gestión de Proyectos Cuánticos",
-    href: "/divine-flow",
+    href: "/DivineFlow",
     icon: Code,
     tech: "React, WebSockets, QA" 
   },
@@ -145,7 +145,7 @@ export default function HomePage() {
       }
       /* Fondo principal negro */
       .bg-dark-space {
-        background-color: #0A0A0A;
+        background-color: #000000ff;
       }
     `;
     document.head.appendChild(style);
