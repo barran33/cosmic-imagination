@@ -17,12 +17,12 @@ A hybrid neural engine that merges **Stable Diffusion** and **Deep Dream** to ma
 A module dedicated to the power of frequency. It visualizes the "Music of the Spheres" through cymatic patterns, transforming sound and intention into harmonic visual geometry.
 - **Essence:** Tuning into the resonance of universal vibration.
 - **Tech Stack:** Next.js, FastAPI, Real-time Audio Analysis & Data Visualization.
-![Cosmic Symphony Preview](https://i.ibb.co/zTWnCdrw/Captura-de-pantalla-2025-12-18-a-la-s-9-22-59-a-m.png)
+![Cosmic Symphony Preview](https://i.ibb.co/PGdK2rNZ/Captura-de-pantalla-2026-02-17-a-la-s-8-26-43-a-m.png)
 
 ### 🏠 Cosmic Portal
 The central nexus of the ecosystem. A high-performance dashboard that manages access to our specialized "High-Frequency Projects."
-![Home Interface](https://i.ibb.co/p62DnYgb/Captura-de-pantalla-2025-12-18-a-la-s-9-22-26-a-m.png)
-![Home Interface](https://i.ibb.co/G3bqHHmR/Captura-de-pantalla-2025-12-18-a-la-s-9-22-32-a-m.png)
+![Home Interface](https://i.ibb.co/ksQW8SGP/Captura-de-pantalla-2026-02-17-a-la-s-8-28-42-a-m.png)
+![Home Interface](https://i.ibb.co/cXJnx6sk/Captura-de-pantalla-2026-02-17-a-la-s-8-28-51-a-m.png)
 
 ---
 
