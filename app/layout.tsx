@@ -6,7 +6,7 @@ import { Inter } from "next/font/google";
 import "../globals.css"; 
 
 // Importa los componentes de la interfaz
-import { AuthProvider } from './components/AuthContext'
+
 import Navbar from './components/Navbar'; 
 
 const inter = Inter({ subsets: ["latin"] }); 
@@ -29,7 +29,7 @@ export default function RootLayout({
         className={`bg-dark-space text-cyan-400 antialiased h-full ${inter.className}`} 
       >
         
-        <AuthProvider>
+        
           
           <Navbar />
           
@@ -37,7 +37,7 @@ export default function RootLayout({
           <main className="pt-16 min-h-screen"> 
               {children}
           </main>
-        </AuthProvider>
+        
       </body>
     </html>
   );

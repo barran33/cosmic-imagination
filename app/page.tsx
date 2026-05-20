@@ -18,17 +18,14 @@ const NeonTitle = ({ text }: { text: string }) => (
   </motion.h1>
 );
 
-// Componente para el botón de la Auditoría
-const NeonButton = () => (
-  // Reemplazamos <Link> con un <a> o div para evitar la dependencia de next/link
-  <a href="/cosmic-exploration" aria-label="Ir a Oráculo Cósmico" 
-     className="block max-w-max mx-auto" // Asegura que la animación funciona en el div
-  > 
+// Componente para el botón de la Auditoría - AHORA CON CONTROL DE ACCIÓN PARA EL MODAL
+const NeonButton = ({ onClick }: { onClick: () => void }) => (
+  <div className="block max-w-max mx-auto" onClick={onClick}> 
     <motion.div
-      // Efecto de brillo al pasar el ratón usando la sombra personalizada
+      // Conservamos tus efectos de brillo e interactividad intactos
       whileHover={{ scale: 1.05, boxShadow: '0 0 10px #00FFFF, 0 0 40px #00FFFF' }} 
       whileTap={{ scale: 0.95 }}
-      // Estilo oscuro con texto cian para mantener el contraste
+      // Estilo oscuro con texto cian original para mantener tu diseño exacto
       className="mt-8 px-8 py-3 bg-gray-900/50 text-cyan-300 font-bold uppercase border border-cyan-300 rounded-full tracking-widest cursor-pointer transition-all duration-300 shadow-neon-light text-neon-glow-css"
     >
       <div className="flex items-center justify-center gap-2">
@@ -36,7 +33,7 @@ const NeonButton = () => (
         Cosmic Portal
       </div>
     </motion.div>
-  </a>
+  </div>
 );
 
 // Datos de los proyectos conceptuales (reutilizados del componente anterior)
@@ -132,6 +129,9 @@ export default function HomePage() {
   // URL de fondo de nebulosa oscura (placeholder)
   const cosmicBackgroundUrl = "https://i.ibb.co/6cJGmY57/2795-C464-DAC8-4-FBB-889-C-BEE78-FDA8-DD9.jpg";
 
+  // Agregamos el estado para controlar la apertura del modal directamente desde el Home
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   // Agregamos un pequeño ajuste para los estilos CSS necesarios
   useEffect(() => {
     const style = document.createElement('style');
@@ -154,6 +154,16 @@ export default function HomePage() {
     };
   }, []);
 
+  // Función manejadora para lanzar el Modal (conecta con tu arquitectura global)
+  const handleOpenPortal = () => {
+    // Si manejas un estado global (como un custom hook, context o Zustand), ejecútalo aquí.
+    // De lo contrario, este trigger local cambia el estado para renderizar el formulario.
+    setIsModalOpen(true);
+    
+    // Disparamos un evento personalizado por si el Navbar o el Layout global necesitan escuchar la acción
+    const event = new CustomEvent('open-cosmic-portal');
+    window.dispatchEvent(event);
+  };
 
   return (
     
@@ -188,8 +198,8 @@ export default function HomePage() {
                 "We unify scientific and spiritual knowledge to improve the well-being of the Cosmos."
               </motion.p>
               
-              {/* Botón de la Auditoría (Tu CTA principal) */}
-              <NeonButton />
+              {/* Botón de la Auditoría pasándole la función de activación */}
+              <NeonButton onClick={handleOpenPortal} />
           </div>
       </section>
       {/* ==================================================================== */}
@@ -200,13 +210,84 @@ export default function HomePage() {
         <FeaturedProjects />
         
         {/* Espacio extra para ver el efecto de scroll contra el fondo negro */}
-        <div className='p-20 text-center text-gray-500'>
-            <p className='text-3xl font-light mb-4'>Explora nuestra galaxia de proyectos...</p>
-            <p>La sección con fondo negro sólido comienza aquí, confirmando que la imagen del Hero ya no está presente al hacer scroll.</p>
-            <div className='h-screen'></div> {/* Espacio para forzar más scroll */}
-            <p>Fin del contenido.</p>
+        {/* SECCIÓN: EXPLORA NUESTRA GALAXIA DE PROYECTOS */}
+{/* Expandido a max-w-7xl para abrir el terreno horizontal en desktop */}
+<div className="w-full max-w-7xl mx-auto mt-24 mb-20 px-6 text-center relative selection:bg-cyan-500/30">
+    
+    {/* Resplandor Cósmico de Fondo */}
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-950/20 rounded-full blur-[140px] pointer-events-none" />
+
+    <div className="relative z-10 space-y-10 max-w-5xl mx-auto">
+        
+        {/* Etiqueta de Telemetría Neón */}
+        <div className="inline-block px-3 py-1 bg-cyan-950/30 border border-cyan-800/40 rounded-full">
+            <h3 className="text-cyan-400 font-mono text-[11px] tracking-[0.35em] uppercase drop-shadow-[0_0_6px_rgba(34,211,238,0.4)]">
+                // QUANTUM METAPHYSICS ARCHIVE
+            </h3>
+        </div>
+        
+        {/* Título Principal Impresionante con Efecto Neón */}
+        <h2 className="text-3xl md:text-4xl font-extralight tracking-wider text-white uppercase">
+            Explore our  <span className="text-cyan-400 font-normal drop-shadow-[0_0_12px_rgba(6,182,212,0.6)]">galaxy of projects</span>
+        </h2>
+        
+        {/* Manifiesto Alquímico / Cuántico Central */}
+        
+          <p className="text-base md:text-lg text-neutral-300 font-sans leading-relaxed tracking-wide text-justify sm:text-center max-w-4xl mx-auto">
+            This ecosystem is the point of convergence where **science and spirituality** unify, intertwining **quantum physics**, **modern alchemy**, **sacred geometry**, and **cymatics**. Through universal patterns and conscious software development, we structure interactive interfaces with the purpose of elevating the human experience and making this world a better place to live. We don't create ordinary technology; we design digital transformation tools that tune frequencies, optimize flows, and materialize intentions into highly resonant visual architectures.
+
+        </p>
+
+        {/* Desglose Explicativo de la Tríada Cósmica */}
+        {/* Incrementado el gap-8 para mejor distribución de las columnas ampliadas */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8 text-left">
+            
+            {/* Esencia 1: Cosmic Architect */}
+            {/* p-8 para marcos expandidos, text-sm para el título y text-base para el cuerpo */}
+            <div className="p-8 rounded-xl bg-neutral-950/50 border border-neutral-900/60 hover:border-cyan-950 transition-all duration-300 backdrop-blur-sm shadow-[0_4px_25px_rgba(0,0,0,0.6)]">
+                <h4 className="text-sm font-mono text-cyan-400 tracking-widest uppercase mb-3 drop-shadow-[0_0_4px_rgba(6,182,212,0.4)]">
+                     📜 Cosmic Architect
+                </h4>
+                <p className="text-sm text-neutral-400 leading-relaxed tracking-wide">
+                    The pure transmutation of the word. Through this quantum engine, you can **discover the hidden geometric pattern behind words**, revealing the mathematical signature and metaphysical element that governs your thoughts.
+                </p>
+            </div>
+
+            {/* Esencia 2: Cosmic Symphony */}
+            <div className="p-8 rounded-xl bg-neutral-950/50 border border-neutral-900/60 hover:border-cyan-950 transition-all duration-300 backdrop-blur-sm shadow-[0_4px_25px_rgba(0,0,0,0.6)]">
+                <h4 className="text-sm font-mono text-cyan-400 tracking-widest uppercase mb-3 drop-shadow-[0_0_4px_rgba(6,182,212,0.4)]">
+                    ⚛️ Cosmic Symphony
+                </h4>
+                <p className="text-sm text-neutral-400 leading-relaxed tracking-wide">
+                    The ancient art of **cymatics** made code. Here you interact directly with elemental vibration, injecting acoustic frequencies to **give visual form to sound** in real time, tuning your brainwaves to states of focus, relaxation, or orbital sleep.
+                </p>
+            </div>
+
+            {/* Esencia 3: Divine Flow */}
+            <div className="p-8 rounded-xl bg-neutral-950/50 border border-neutral-900/60 hover:border-cyan-950 transition-all duration-300 backdrop-blur-sm shadow-[0_4px_25px_rgba(0,0,0,0.6)]">
+                <h4 className="text-sm font-mono text-cyan-400 tracking-widest uppercase mb-3 drop-shadow-[0_0_4px_rgba(6,182,212,0.4)]">
+                    ⭐ Divine Flow
+                </h4>
+                <p className="text-sm text-neutral-400 leading-relaxed tracking-wide">
+                    Visualizing the cosmic order. Using the sacred structure of the star, this system allows you to map and **observe the different types of divine and universal flows**, translating quantum entanglement and the interconnectedness of everything into harmonic visual currents.
+                </p>
+            </div>
+
+        </div>
+
+        {/* Cierre Técnico Premium */}
+        <div className="flex justify-center items-center gap-3 pt-8">
+            <div className="h-[1px] w-24 bg-gradient-to-r from-transparent to-cyan-950" />
+            <span className="text-[10px] font-mono text-cyan-600 tracking-[0.4em] uppercase animate-pulse drop-shadow-[0_0_4px_rgba(6,182,212,0.2)]">
+                // CORE SYSTEM ACTIVE //
+            </span>
+            <div className="h-[1px] w-24 bg-gradient-to-l from-transparent to-cyan-950" />
+        </div>
+        
+    </div>
+</div>
         </div>
       </div>
-    </div>
+    
   );
 }

@@ -20,7 +20,8 @@ interface CosmicProcessResult {
     error?: string;
 }
 
-const FASTAPI_URL = "http://localhost:8000"; // URL base de tu backend
+// URL base de tu backend dinámica (usa la variable de entorno o apunta al subdominio de producción)
+const FASTAPI_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.cosmic-imagination.com";
 
 
 export const sendStarTripDataForProcessing = async (data: CosmicDataInput): Promise<CosmicProcessResult> => {

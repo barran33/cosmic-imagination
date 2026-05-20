@@ -16,3 +16,4 @@ serviceAccountKey.json
 # Basura de sistema
 .DS_Store
 __pycache__/
+
