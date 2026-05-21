@@ -94,9 +94,12 @@ db = firestore.client()
 # -----------------------------------------------------
 
 origins = [
-    "http://localhost:3000", 
-    "http://127.0.0.1:3000", 
-    "https://cosmic-imagination.vercel.app" # <--- ESTA ES LA CLAVE
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://cosmic-imagination.vercel.app",
+    "https://cosmic-imagination.com",
+    "https://www.cosmic-imagination.com",
+    "https://cosmic-imagination-4fju0gyy5-cosmic369.vercel.app" # <--- Agrega el subdominio de preview exacto si estás probando desde ahí
 ]
 
 app.add_middleware(
