@@ -99,12 +99,15 @@ origins = [
     "https://cosmic-imagination.vercel.app",
     "https://cosmic-imagination.com",
     "https://www.cosmic-imagination.com",
-    "https://cosmic-imagination-4fju0gyy5-cosmic369.vercel.app" # <--- Agrega el subdominio de preview exacto si estás probando desde ahí
+    
 ]
 
 app.add_middleware(
-    CORSMiddleware, allow_origins=["*"], allow_credentials=True, 
-    allow_methods=["*"], allow_headers=["*"],
+    CORSMiddleware, 
+    allow_origins=origins,  # <--- CAMBIA COMPLETAMENTE EL ["*"] POR TU VARIABLE origins
+    allow_credentials=True,
+    allow_methods=["*"], 
+    allow_headers=["*"],
 )
 
 # -----------------------------------------------------
