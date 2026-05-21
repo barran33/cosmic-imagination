@@ -11,7 +11,7 @@ import time
 import random
 import math
 import asyncio
-
+import json
 # --- Importaciones para el motor de arte (Optimizadas) ---
 import numpy as np 
 from PIL import Image 
@@ -55,9 +55,30 @@ except Exception as e:
     db = None
 
 
-# Ejemplo de inicialización segura
-cred = credentials.Certificate(os.getenv("FIREBASE_CREDENTIALS_PATH"))
-firebase_admin.initialize_app(cred)
+# --- INICIALIZACIÓN SEGURA DE FIREBASE ---
+# Aquí cargamos las variables directamente desde el entorno
+firebase_config = {
+    "type": "service_account",
+    "project_id": os.environ.get("FIREBASE_PROJECT_ID"),
+    "private_key_id": os.environ.get("FIREBASE_PRIVATE_KEY_ID"),
+    "private_key": os.environ.get("FIREBASE_PRIVATE_KEY", "").replace('\\n', '\n'),
+    "client_email": os.environ.get("FIREBASE_CLIENT_EMAIL"),
+    "client_id": os.environ.get("FIREBASE_CLIENT_ID"),
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": os.environ.get("FIREBASE_CLIENT_CERT_URL")
+}
+
+# Solo inicializamos si tenemos las credenciales mínimas
+if all(firebase_config.values()):
+    cred = credentials.Certificate(firebase_config)
+    firebase_admin.initialize_app(cred)
+    db = firestore.client()
+    print("✅ Firebase inicializado correctamente.")
+else:
+    print("❌ Error: Faltan variables de entorno de Firebase.")
+
 
 # -----------------------------------------------------
 # 2. CONFIGURACIÓN DE CORS
