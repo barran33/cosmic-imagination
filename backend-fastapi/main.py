@@ -54,6 +54,11 @@ except Exception as e:
     print(f"❌ Error CRÍTICO Firebase: {e}")
     db = None
 
+
+# Ejemplo de inicialización segura
+cred = credentials.Certificate(os.getenv("FIREBASE_CREDENTIALS_PATH"))
+firebase_admin.initialize_app(cred)
+
 # -----------------------------------------------------
 # 2. CONFIGURACIÓN DE CORS
 # -----------------------------------------------------
@@ -69,8 +74,7 @@ app.add_middleware(
 # 2.5. CONSTANTES DE INFERENCIA EN LA NUBE
 # -----------------------------------------------------
 
-HUGGINGFACE_API_URL = "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0"
-HUGGINGFACE_API_TOKEN = os.getenv("HUGGINGFACE_TOKEN") 
+
 
 # -----------------------------------------------------
 # 3. MODELOS DE DATOS (ACTUALIZADOS PARA COSMIC ARCHITECT)
@@ -191,38 +195,6 @@ async def websocket_divine_flow(websocket: WebSocket):
     except WebSocketDisconnect:
         print("🌑 Conexión de Divine Flow cerrada.")
 
-# -----------------------------------------------------
-# 5. MOTOR DEEP DREAM (TENSORFLOW) - SIN CAMBIOS
-# -----------------------------------------------------
-BASE_INCEPTION_MODEL = None
-try:
-    if tf.__version__.startswith('2'):
-        BASE_INCEPTION_MODEL = inception.InceptionV3(include_top=False, weights='imagenet')
-except Exception:
-    BASE_INCEPTION_MODEL = None
-
-def deprocess(image):
-    image = tf.clip_by_value(image, -1.0, 1.0)
-    image = 255 * (image + 1.0) / 2.0
-    return tf.cast(image, tf.uint8)
-
-def calc_loss(image, model: Model):
-    img_batch = tf.expand_dims(image, axis=0) 
-    layer_activations = model(img_batch)
-    if not isinstance(layer_activations, (list, tuple)):
-        layer_activations = [layer_activations]
-    losses = [tf.math.reduce_mean(act) for act in layer_activations]
-    return tf.reduce_sum(losses) 
-
-@tf.function
-def deepdream_step(model, image, step_size):
-    with tf.GradientTape() as tape:
-        tape.watch(image)
-        loss = calc_loss(image, model)
-    gradients = tape.gradient(loss, image)
-    gradients /= tf.math.reduce_std(gradients) + 1e-8
-    image = image + gradients * step_size
-    return loss, tf.expand_dims(image, axis=0)
 
 # -----------------------------------------------------
 # 6. LÓGICA DE GEOMETRÍA CUÁNTICA ARMÓNICA (COSMIC ARCHITECT)
