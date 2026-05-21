@@ -587,7 +587,7 @@ async def get_cosmic_mystery():
 # 9. ENDPOINTS DE CONTROL INTERNO
 # -----------------------------------------------------
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 def read_root():
     return {"status": "Cosmic Imagination 5.1 Online"}
 
