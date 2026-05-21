@@ -17,14 +17,16 @@ import numpy as np
 from PIL import Image 
 from io import BytesIO 
 import requests 
-import tensorflow as tf
-import tensorflow.keras.applications.inception_v3 as inception 
 import base64
 import re 
-from tensorflow.keras.models import Model 
-from tensorflow.python.framework.errors_impl import NotFoundError as TFNotFoundError
 
-# --- Importaciones añaduidas para el puente SMTP de Zoho ---
+# --- IMPORTACIONES DE TENSORFLOW (Eliminar o comentar todas estas) ---
+# import tensorflow as tf                                           ### COMENTAR ESTO
+# import tensorflow.keras.applications.inception_v3 as inception    ### COMENTAR ESTO
+# from tensorflow.keras.models import Model                         ### COMENTAR ESTO
+# from tensorflow.python.framework.errors_impl import NotFoundError as TFNotFoundError ### COMENTAR ESTO
+
+# --- Importaciones añadidas para el puente SMTP de Zoho ---
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
