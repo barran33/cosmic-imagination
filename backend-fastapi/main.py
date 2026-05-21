@@ -56,28 +56,37 @@ except Exception as e:
 
 
 # --- INICIALIZACIÓN SEGURA DE FIREBASE ---
-# Aquí cargamos las variables directamente desde el entorno
-firebase_config = {
-    "type": "service_account",
-    "project_id": os.environ.get("FIREBASE_PROJECT_ID"),
-    "private_key_id": os.environ.get("FIREBASE_PRIVATE_KEY_ID"),
-    "private_key": os.environ.get("FIREBASE_PRIVATE_KEY", "").replace('\\n', '\n'),
-    "client_email": os.environ.get("FIREBASE_CLIENT_EMAIL"),
-    "client_id": os.environ.get("FIREBASE_CLIENT_ID"),
-    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-    "token_uri": "https://oauth2.googleapis.com/token",
-    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-    "client_x509_cert_url": os.environ.get("FIREBASE_CLIENT_CERT_URL")
-}
+def inicializar_firebase():
+    try:
+        # Intentamos obtener las variables de entorno
+        # Si estás en Render, estas deben estar definidas en la pestaña 'Environment'
+        project_id = os.getenv("FIREBASE_PROJECT_ID")
+        
+        if project_id:
+            # Opción A: Configuración desde variables individuales
+            cred = credentials.Certificate({
+                "type": "service_account",
+                "project_id": project_id,
+                "private_key_id": os.getenv("FIREBASE_PRIVATE_KEY_ID"),
+                "private_key": os.getenv("FIREBASE_PRIVATE_KEY", "").replace('\\n', '\n'),
+                "client_email": os.getenv("FIREBASE_CLIENT_EMAIL"),
+                "client_id": os.getenv("FIREBASE_CLIENT_ID"),
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+                "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+                "client_x509_cert_url": os.getenv("FIREBASE_CLIENT_CERT_URL")
+            })
+            firebase_admin.initialize_app(cred)
+            print("✅ Firebase inicializado desde variables de entorno.")
+        else:
+            # Opción B: Fallback (solo si el archivo existiera, pero no es tu caso)
+            print("⚠️ No se encontraron variables de entorno para Firebase.")
+            
+    except Exception as e:
+        print(f"❌ Error al inicializar Firebase: {e}")
 
-# Solo inicializamos si tenemos las credenciales mínimas
-if all(firebase_config.values()):
-    cred = credentials.Certificate(firebase_config)
-    firebase_admin.initialize_app(cred)
-    db = firestore.client()
-    print("✅ Firebase inicializado correctamente.")
-else:
-    print("❌ Error: Faltan variables de entorno de Firebase.")
+inicializar_firebase()
+db = firestore.client()
 
 
 # -----------------------------------------------------
