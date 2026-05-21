@@ -93,7 +93,11 @@ db = firestore.client()
 # 2. CONFIGURACIÓN DE CORS
 # -----------------------------------------------------
 
-origins = ["http://localhost:3000", "http://127.0.0.1:3000", "*"] 
+origins = [
+    "http://localhost:3000", 
+    "http://127.0.0.1:3000", 
+    "https://cosmic-imagination.vercel.app" # <--- ESTA ES LA CLAVE
+]
 
 app.add_middleware(
     CORSMiddleware, allow_origins=origins, allow_credentials=True, 
