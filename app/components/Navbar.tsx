@@ -120,7 +120,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-black/90 text-white border-b border-cyan-400/20 backdrop-blur-md shadow-[0_4px_30px_rgba(0,0,0,0.9)]"> 
+      <header className="fixed top-0 left-0 right-0 z-50 bg-black/90 text-white text-neon-glow-css  border-b border-cyan-400/20 backdrop-blur-md shadow-[0_4px_30px_rgba(0,0,0,0.9)]"> 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             

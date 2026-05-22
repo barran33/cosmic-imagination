@@ -37,7 +37,7 @@ body {
   /* Usamos #00FFFF (cian puro) para el brillo */
   text-shadow: 
     0 0 3px #00f0fd,    /* Sombra pequeña y fuerte */
-    0 0 9px #00e1ff,   /* Sombra media */
+    0 0 9px #00c3ff,   /* Sombra media */
     0 0 15px #00FFFF;   /* Sombra exterior difusa */
 }
 
