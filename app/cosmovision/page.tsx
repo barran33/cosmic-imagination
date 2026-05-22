@@ -103,6 +103,8 @@ export default function CosmovisionPage() {
             <p className="text-sm text-neutral-400 leading-relaxed flex-grow">
               Advanced engineering and a robust backend. We build clean, high-speed systems based on real-time data interleaving and architectures immune to critical failures.
             </p>
+
+            
           </motion.div>
 
           {/* Tarjeta 2 - Estética Áurea */}

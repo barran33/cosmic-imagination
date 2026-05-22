@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 
+
 interface Particle {
   x: number; y: number; vx: number; vy: number; energy: number;
 }

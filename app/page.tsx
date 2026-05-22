@@ -2,7 +2,7 @@
 import { motion } from 'framer-motion';
 import { Sparkles, Code, Activity, Atom } from 'lucide-react'; 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link'; // 🔥 Importación clave para SPA routing
+import Link from 'next/link'; 
 
 // Componente para el título con efecto Neón
 const NeonTitle = ({ text }: { text: string }) => (
@@ -83,7 +83,6 @@ const FeaturedProjects = () => (
         {projectData.map((project, index) => {
           const Icon = project.icon;
           return (
-            /* 🔥 Cambiado de <a> a <Link> para mantener vivos los estados de animación al retroceder */
             <Link href={project.href} key={project.title} className="block group"> 
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -130,10 +129,10 @@ const FeaturedProjects = () => (
 
 export default function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [mounted, setMounted] = useState(false); // 🔥 Estado para controlar consistencia de partículas en cliente
+  const [mounted, setMounted] = useState(false); 
 
   useEffect(() => {
-    setMounted(true); // Se marca como montado una vez esté en el cliente
+    setMounted(true); 
     
     const style = document.createElement('style');
     style.textContent = `
@@ -179,36 +178,44 @@ export default function HomePage() {
       
       {/* CAPA DE DESTELLOS Y PARTICULAS FLOTANTES CUÁNTICAS */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-[20%] left-[50%] -translate-x-1/2 w-[800px] h-[800px] bg-cyan-500/5 blur-[150px] rounded-full pointer-events-none" />
+  {/* Fondo de brillo ambiental */}
+  <div className="absolute top-[20%] left-[50%] -translate-x-1/2 w-[800px] h-[800px] bg-cyan-500/10 blur-[150px] rounded-full" />
 
-        {/* 🔥 Aumentado de 35 a 60 para generar una densidad sutil y armoniosa en todo el home */}
-        {mounted && [...Array(150)].map((_, idx) => (
-          <motion.div
-            key={`space-particle-${idx}`}
-            className="absolute bg-cyan-400 rounded-full"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              width: idx % 5 === 0 ? '4.5px' : '2.5px',
-              height: idx % 5 === 0 ? '4.5px' : '2.5px',
-              opacity: Math.random() * 0.6 + 0.3,
-              filter: idx % 5 === 0 ? 'drop-shadow(0 0 4px rgba(6,182,212,0.8))' : 'none'
-            }}
-            animate={{
-              y: [0, Math.random() * -60 - 30],
-              opacity: [0.2, Math.random() * 0.8 + 0.4, 0.2],
-              scale: [0.9, Math.random() * 1.5 + 1.1, 0.9],
-            }}
-            transition={{
-              duration: Math.random() * 8 + 7,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: Math.random() * 6,
-            }}
-          />
-        ))}
-      </div>
-
+  {mounted && [...Array(270)].map((_, idx) => {
+    const isLarge = idx % 10 === 0; 
+    return (
+      <motion.div
+        key={`space-particle-${idx}`}
+        className="absolute rounded-full"
+        style={{
+          top: `${Math.random() * 100}%`,
+          left: `${Math.random() * 100}%`,
+          // Tamaño ligeramente mayor para mayor presencia
+          width: isLarge ? '6px' : '3px',
+          height: isLarge ? '4px' : '2px',
+          backgroundColor: '#a5f3fc', // Un cian más claro para más brillo
+          boxShadow: isLarge 
+            ? '0 0 12px 3px #22d3ee, 0 0 24px 6px rgba(6, 182, 212, 0.6)' 
+            : '0 0 8px 2px #22d3ee',
+        }}
+        animate={{
+          y: [0, Math.random() * -100 - 50],
+          // Opacidad más alta para que no se sientan invisibles
+          opacity: [0, 0.9, 0.9, 0], 
+          scale: [0, 1.2, 1.2, 0],
+        }}
+        transition={{
+          duration: Math.random() * 8 + 8,
+          repeat: Infinity,
+          ease: "linear",
+          delay: Math.random() * 10,
+          // Mantenemos el brillo en el centro de la animación
+          times: [0, 0.2, 0.8, 1] 
+        }}
+      />
+    );
+  })}
+</div>
       {/* HERO SECTION */}
       <section className="relative min-h-screen flex flex-col items-center justify-center text-center p-4 overflow-hidden z-10">
         <div className="relative flex flex-col items-center max-w-4xl mx-auto pt-8">
@@ -216,95 +223,79 @@ export default function HomePage() {
           <div className="relative w-64 h-64 mb-10 flex items-center justify-center animate-float-supreme">
             <div className="absolute w-44 h-44 bg-cyan-500/20 rounded-full blur-[80px] pointer-events-none" />
             
+            {/* ========================================================
+                PORTAL CÓSMICO ACTUALIZADO - GEOMETRÍA SAGRADA FLUIDA 
+                ======================================================== */}
             <svg 
               viewBox="0 0 200 200" 
-              className="w-60 h-60 animate-vortex-supreme filter drop-shadow-[0_0_25px_rgba(6,182,212,0.85)] drop-shadow-[0_0_60px_rgba(6,182,212,0.5)]"
-              style={{ mixBlendMode: 'screen' }}
+              className="w-70 h-70"
             >
               <defs>
-                <linearGradient id="spiral-grad-vibrant" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#FFFFFF" stopOpacity="1" />
-                  <stop offset="15%" stopColor="#22D3EE" stopOpacity="0.95" />
-                  <stop offset="45%" stopColor="#06B6D4" stopOpacity="0.8" />
-                  <stop offset="70%" stopColor="#0891B2" stopOpacity="0.4" />
-                  <stop offset="90%" stopColor="#155E75" stopOpacity="0.15" />
-                  <stop offset="100%" stopColor="#000000" stopOpacity="0" />
-                </linearGradient>
-                <linearGradient id="spiral-grad-reverse" x1="100%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#22D3EE" stopOpacity="0.7" />
-                  <stop offset="50%" stopColor="#0891B2" stopOpacity="0.4" />
-                  <stop offset="100%" stopColor="#000000" stopOpacity="0" />
-                </linearGradient>
-                <radialGradient id="portal-center-glow" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="#FFFFFF" stopOpacity="1" />
-                  <stop offset="20%" stopColor="#22D3EE" stopOpacity="0.9" />
-                  <stop offset="50%" stopColor="#06B6D4" stopOpacity="0.4" />
-                  <stop offset="85%" stopColor="#0A2540" stopOpacity="0.1" />
-                  <stop offset="100%" stopColor="#000000" stopOpacity="0" />
-                </radialGradient>
+                {/* Filtro de neón intenso */}
+                <filter id="neon-glow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
               </defs>
-              
-              {/* ANILLOS DE GEOMETRÍA SAGRADA Y CALIBRACIÓN PERIMETRAL EXTERNA */}
-              <circle cx="100" cy="100" r="95" fill="none" stroke="#06B6D4" strokeWidth="0.5" opacity="0.2" />
-              <circle cx="100" cy="100" r="91" fill="none" stroke="#22D3EE" strokeWidth="1.5" strokeDasharray="4 28" opacity="0.5" />
-              <circle cx="100" cy="100" r="87" fill="none" stroke="#0891B2" strokeWidth="2.5" strokeDasharray="45 10 15 10" opacity="0.3" />
-              <circle cx="100" cy="100" r="81" fill="none" stroke="#06B6D4" strokeWidth="0.75" strokeDasharray="2 6" opacity="0.4" />
-              
-              {/* VÓRTICE HIPER-COMPLEJO DE INTERFERENCIA CUÁNTICA CON 24 BRAZOS DE ALTA DENSIDAD */}
-              {[...Array(12)].map((_, i) => (
-                <g key={`portal-vortex-complex-arm-${i}`} transform={`rotate(${i * 30} 100 100)`}>
-                  {/* Brazo A: Resplandor base expansivo */}
-                  <path
-                    d="M 100 100 C 120 75, 145 80, 150 115 C 155 150, 120 175, 85 160 C 45 140, 40 95, 80 60 C 125 20, 185 40, 195 100"
-                    fill="none"
-                    stroke="url(#spiral-grad-vibrant)"
-                    strokeWidth="6"
-                    strokeLinecap="round"
-                    opacity={0.2}
-                    style={{ filter: 'blur(5px)' }} 
-                  />
-                  {/* Brazo A: Filamento denso de alta frecuencia */}
-                  <path
-                    d="M 100 100 C 120 75, 145 80, 150 115 C 155 150, 120 175, 85 160 C 45 140, 40 95, 80 60 C 125 20, 185 40, 195 100"
-                    fill="none"
-                    stroke="url(#spiral-grad-vibrant)"
-                    strokeWidth="2.8" 
-                    strokeLinecap="round"
-                    opacity={0.85}
-                  />
-                  
-                  {/* Brazo B: Contra-vórtice cruzado para profundidad tridimensional */}
-                  <path
-                    d="M 100 100 C 80 125, 55 120, 50 85 C 45 50, 80 25, 115 40 C 155 60, 160 105, 120 140 C 75 180, 15 160, 5 100"
-                    fill="none"
-                    stroke="url(#spiral-grad-reverse)"
-                    strokeWidth="1.2"
-                    strokeLinecap="round"
-                    opacity={0.4}
-                  />
 
-                  {/* Núcleo interno: Filamento fractal de aceleración geométrica */}
+              {/* CAPA 1: Estructura Lemniscata (Líneas gruesas y continuas) */}
+              <g className="animate-vortex-supreme" style={{ transformOrigin: 'center' }}>
+                {[...Array(6)].map((_, i) => (
                   <path
-                    d="M 100 100 C 108 88, 122 92, 125 108 C 128 124, 112 136, 92 130 C 72 122, 68 98, 90 78 C 112 58, 142 68, 148 98"
+                    key={i}
+                    d="M100 100 C 100 20, 20 100, 100 180 C 180 100, 100 20, 100 100"
                     fill="none"
-                    stroke="#FFFFFF"
-                    strokeWidth="1.2" 
-                    strokeDasharray="8 4"
-                    opacity={0.7}
+                    stroke="#22D3EE"
+                    strokeWidth="1.5"
+                    opacity="0.6"
+                    transform={`rotate(${i * 60} 100 100)`}
+                    style={{ filter: 'url(#neon-glow)' }}
                   />
-                </g>
-              ))}
+                ))}
+              </g>
 
-              {/* ANILLOS INTERNOS DE ESTABILIZACIÓN ENERGÉTICA */}
-              <circle cx="100" cy="100" r="42" fill="none" stroke="#22D3EE" strokeWidth="1" strokeDasharray="12 4 2 4" opacity="0.5" />
-              <circle cx="100" cy="100" r="38" fill="none" stroke="#FFFFFF" strokeWidth="0.5" opacity="0.3" />
+              {/* CAPA 2: Anillos de Frecuencia (Sólidos y brillantes) */}
+              <g className="animate-vortex-supreme" style={{ animationDuration: '40s', transformOrigin: 'center' }}>
+                <circle cx="100" cy="100" r="70" fill="none" stroke="#06B6D4" strokeWidth="2" opacity="0.8" style={{ filter: 'url(#neon-glow)' }} />
+                <circle cx="100" cy="100" r="50" fill="none" stroke="#FFFFFF" strokeWidth="1.5" opacity="0.6" />
+              </g>
+
+              {/* CAPA 3: Núcleo (Energía pura y gruesa) */}
+              <g className="animate-vortex-supreme" style={{ animationDuration: '15s', animationDirection: 'reverse', transformOrigin: 'center' }}>
+                <path
+                  d="M100 30 A 70 70 0 1 0 100 170 A 70 70 0 1 0 100 30"
+                  fill="none"
+                  stroke="#22D3EE"
+                  strokeWidth="3"
+                  style={{ filter: 'url(#neon-glow)' }}
+                />
+                {[0, 120, 240].map((angle) => (
+                  <circle 
+                    key={angle} 
+                    cx={100 + 70 * Math.cos(angle * Math.PI / 180)} 
+                    cy={100 + 70 * Math.sin(angle * Math.PI / 180)} 
+                    r="6" 
+                    fill="#FFFFFF" 
+                    style={{ filter: 'url(#neon-glow)' }}
+                  />
+                ))}
+              </g>
+
+              {/* CENTRO: Singularidad con pulso neón */}
+              <circle cx="100" cy="100" r="15" fill="#000000" stroke="#22D3EE" strokeWidth="1" />
+              <circle cx="100" cy="100" r="15" fill="none" stroke="#22D3EE" strokeWidth="3" opacity="0.4" style={{ filter: 'url(#neon-glow)' }}>
+                <animate attributeName="r" values="15;22;15" dur="3s" repeatCount="indefinite" />
+              </circle>
               
-              {/* HORIZONTE DE SUCESOS CENTRAL (EVENT HORIZON LIQUID GLOW) */}
-              <circle cx="100" cy="100" r="36" fill="url(#portal-center-glow)" opacity="0.75" style={{ mixBlendMode: 'color-dodge' }} />
-              <circle cx="100" cy="100" r="19" fill="#000000" /> {/* Vacío gravitacional absoluto */}
-              <circle cx="100" cy="100" r="17" fill="url(#portal-center-glow)" opacity="0.95" className="animate-pulse" />
-              <circle cx="100" cy="100" r="4" fill="#FFFFFF" filter="drop-shadow(0 0 6px #FFFFFF)" />
+              <circle cx="100" cy="100" r="8" fill="#FFFFFF" style={{ filter: 'url(#neon-glow)' }}>
+                <animate attributeName="r" values="8;12;8" dur="1.5s" repeatCount="indefinite" />
+              </circle>
             </svg>
+            {/* ======================================================== */}
+            
           </div>
 
           <NeonTitle text="Co§mic Imagination!" />

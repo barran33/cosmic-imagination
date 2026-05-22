@@ -4,32 +4,26 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Play, Pause, Upload, Music, Volume2 } from 'lucide-react';
 
 // ==========================================
-// PALETA DE COLORES ALQUÍMICOS (Optimizado para WebKit/Safari)
+// PALETA DE COLORES ALQUÍMICOS Y CONFIGURACIÓN CUÁNTICA
 // ==========================================
 const MODE_SETTINGS = {
     focus: { 
-        vertices: 72, // Reducido sutilmente para optimizar frames en pantallas ProMotion/OLED de iPhone
-        harmonics: 15, 
         speed: 1.8, 
         color: '#ffffff',       
         secondaryColor: '#01ebf7', 
-        label: 'Beta Waves: Hyper-Focus Crystal' 
+        label: 'Beta Waves: Tesla 3-6-9 Vortex' 
     },
     relax: { 
-        vertices: 60, 
-        harmonics: 6, 
-        speed: 0.8, 
+        speed: 0.6, 
         color: '#00ffaa',       
         secondaryColor: '#0066ff', 
-        label: 'Alpha Waves: Sacred Resonance' 
+        label: 'Alpha Waves: Quantum Liquid Lotus' 
     },
     sleep: { 
-        vertices: 64, 
-        harmonics: 3, 
-        speed: 0.36, 
+        speed: 0.2, 
         color: '#ff007f',       
         secondaryColor: '#0bd3e9', 
-        label: 'Delta Waves: Deep Sleep Orbit' 
+        label: 'Delta Waves: Golden Nebula Breath' 
     }
 };
 
@@ -44,23 +38,19 @@ export default function CosmicSymphony() {
     const analyserRef = useRef<AnalyserNode | null>(null);
     const animationRef = useRef<number | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-    const pathsRef = useRef<(SVGPathElement | null)[]>([]);
-    const coreCenterRef = useRef<SVGCircleElement | null>(null);
-    const coreGlowRef = useRef<SVGCircleElement | null>(null);
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
     const timeRef = useRef(0);
-
+    // Interpolación para fluidez (Evita movimientos forzados o robóticos)
+    const smoothAudioRef = useRef({ bass: 0, mids: 0, highs: 0 });
     const config = MODE_SETTINGS[currentMode];
-    const ringCount = currentMode === 'focus' ? 10 : (currentMode === 'relax' ? 8 : 6);
-    const rings = Array.from({ length: ringCount });
 
     const initAudioContext = (element: HTMLAudioElement) => {
         if (audioContextRef.current) return;
         const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
         const ctx = new AudioContextClass();
         const analyser = ctx.createAnalyser();
-        analyser.fftSize = 256;
+        analyser.fftSize = 512; // Mayor resolución espectral
         const source = ctx.createMediaElementSource(element);
         source.connect(analyser);
         analyser.connect(ctx.destination);
@@ -74,7 +64,6 @@ export default function CosmicSymphony() {
             setAudioFile(file);
             setIsPlaying(false);
             if (audioRef.current) {
-                // Liberar memoria previa del ObjectURL en iOS
                 if (audioRef.current.src) {
                     URL.revokeObjectURL(audioRef.current.src);
                 }
@@ -85,98 +74,178 @@ export default function CosmicSymphony() {
         }
     };
 
-    const calculatePathString = (baseRadius: number, indexFactor: number, midDist: number, highDist: number, time: number) => {
-        const points = [];
-        const numPoints = config.vertices; 
-        const center = 150;
-        const phi = 1.618033988749895;
-        
-        const audioForce = isPlaying ? (midDist / 255) * 24 : 2.0;
-        const highForce = isPlaying ? (highDist / 255) * 12 : 1.0;
-
-        for (let i = 0; i <= numPoints; i++) {
-            const direction = indexFactor % 2 === 0 ? 1 : -1;
-            
-            let rotationOffset = 0;
-            if (currentMode === 'relax') rotationOffset = time * 0.25 * direction;
-            if (currentMode === 'sleep') rotationOffset = time * 0.05 * direction;
-
-            const angle = ((i * 2 * Math.PI) / numPoints) + rotationOffset;
-            let currentRadius = baseRadius;
-
-            if (currentMode === 'focus') {
-                const waveA = Math.sin(angle * config.harmonics + time);
-                const waveB = Math.cos(angle * (config.harmonics / 2) - time * 1.4);
-                const microVib = Math.sin(angle * 32 - time * 3.0) * highForce * 0.45;
-                currentRadius += (waveA * waveB) * audioForce * (1 + indexFactor * 0.08) + microVib;
-            } 
-            else if (currentMode === 'relax') {
-                const harmonicA = Math.sin(angle * config.harmonics + (time * 0.7));
-                const harmonicB = Math.cos(angle * (config.harmonics * phi) - (time * 0.4));
-                const microVib = Math.sin(angle * 24 - time * 2.0) * highForce * 0.3;
-                currentRadius += (harmonicA * harmonicB) * (audioForce * 1.5) * (1 + indexFactor * 0.04) + microVib;
-            } 
-            else {
-                const slowPulse = Math.sin(time * 0.3 + indexFactor * 0.5);
-                const breathing = 1 + Math.sin(time * 0.2) * 0.15;
-                const a = baseRadius * breathing;
-                const b = (15 + indexFactor * 4) * (1 + (audioForce * 0.15));
-                
-                const cardioidComponent = Math.cos(angle * config.harmonics + slowPulse);
-                const goldenSpiralComponent = Math.sin(angle * 3 - time * 0.1) * (4 + indexFactor * 0.5);
-                currentRadius = a + b * cardioidComponent + goldenSpiralComponent;
-            }
-
-            currentRadius = Math.max(10, Math.min(145, currentRadius));
-            
-            const x = center + currentRadius * Math.cos(angle);
-            const y = center + currentRadius * Math.sin(angle);
-            points.push(`${x.toFixed(2)},${y.toFixed(2)}`);
-        }
-        return `M ${points.join(' L ')} Z`;
-    };
-
     const updateCymaticsLoop = () => {
-        let bass = 0;
-        let mids = 0;
-        let highs = 0;
+        let rawBass = 0, rawMids = 0, rawHighs = 0;
 
         if (analyserRef.current && isPlaying) {
             const bufferLength = analyserRef.current.frequencyBinCount;
             const dataArray = new Uint8Array(bufferLength);
             analyserRef.current.getByteFrequencyData(dataArray);
 
-            for (let i = 0; i < 10; i++) bass += dataArray[i]; bass /= 10;
-            for (let i = 10; i < 50; i++) mids += dataArray[i]; mids /= 40;
-            for (let i = 50; i < 100; i++) highs += dataArray[i]; highs /= 50;
+            for (let i = 0; i < 15; i++) rawBass += dataArray[i]; rawBass /= 15;
+            for (let i = 15; i < 100; i++) rawMids += dataArray[i]; rawMids /= 85;
+            for (let i = 100; i < 200; i++) rawHighs += dataArray[i]; rawHighs /= 100;
+        } else {
+            // Latidos base cuando está inactivo
+            rawBass = 30 + Math.sin(timeRef.current * 2) * 10;
+            rawMids = 20;
+            rawHighs = 10;
         }
 
-        timeRef.current += 0.02 * config.speed;
+        // LERPING (Linear Interpolation) - El secreto para el movimiento fluido y natural
+        const ease = 0.08; // Qué tan rápido reacciona (menor = más líquido, mayor = más reactivo)
+        smoothAudioRef.current.bass += (rawBass - smoothAudioRef.current.bass) * ease;
+        smoothAudioRef.current.mids += (rawMids - smoothAudioRef.current.mids) * ease;
+        smoothAudioRef.current.highs += (rawHighs - smoothAudioRef.current.highs) * ease;
 
-        pathsRef.current.forEach((pathElement, i) => {
-            if (!pathElement) return;
+        const { bass, mids, highs } = smoothAudioRef.current;
+        const normBass = bass / 255;
+        const normMids = mids / 255;
+        const normHighs = highs / 255;
 
-            const baseRadius = currentMode === 'sleep'
-                ? 35 + i * (90 / ringCount)
-                : 30 + i * (108 / ringCount);
+        timeRef.current += 0.01 * config.speed + (normHighs * 0.02); // Los agudos aceleran sutilmente el tiempo
+        const t = timeRef.current;
 
-            const newD = calculatePathString(baseRadius, i, mids, highs, timeRef.current);
-            pathElement.setAttribute('d', newD);
+        const canvas = canvasRef.current;
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                const w = canvas.width;
+                const h = canvas.height;
+                const cx = w / 2;
+                const cy = h / 2;
+                
+                // Motion Blur adaptativo según el modo
+                const blurAlpha = currentMode === 'focus' ? 0.25 : currentMode === 'relax' ? 0.15 : 0.08;
+                ctx.fillStyle = `rgba(3, 3, 3, ${blurAlpha})`;
+                ctx.fillRect(0, 0, w, h);
 
-            const baseOpacity = currentMode === 'sleep' ? 0.15 + (i * 0.08) : 0.22 + (i * 0.05);
-            const dynamicOpacity = baseOpacity + (isPlaying ? (mids / 255) * 0.40 : 0.08);
-            pathElement.setAttribute('opacity', Math.min(0.85, dynamicOpacity).toString());
-        });
+                ctx.shadowBlur = 15 + (normBass * 20);
+                ctx.shadowColor = config.secondaryColor;
 
-        const currentBassScale = 1 + (bass / 255) * 0.35;
-        const baseRadiusGlow = currentMode === 'sleep' ? 14 : 22;
-        const baseRadiusCenter = currentMode === 'sleep' ? 8 : 12;
+                // ==========================================
+                // MODO FOCUS: VÓRTICE TESLA 3-6-9 (Geometría afilada y reactiva)
+                // ==========================================
+                if (currentMode === 'focus') {
+                    const instances = 3; // Múltiplo de 3
+                    const points = 9; // Nonágono base
+                    
+                    for (let inst = 0; inst < instances; inst++) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = inst % 2 === 0 ? config.color : config.secondaryColor;
+                        ctx.lineWidth = 1.5 + normBass;
 
-        if (coreGlowRef.current) {
-            coreGlowRef.current.setAttribute('r', (baseRadiusGlow * currentBassScale).toFixed(2));
-        }
-        if (coreCenterRef.current) {
-            coreCenterRef.current.setAttribute('r', (baseRadiusCenter * currentBassScale).toFixed(2));
+                        const radius = 40 + (inst * 45) + (normMids * 60);
+                        const rotationOffset = t * (inst % 2 === 0 ? 1 : -1) * (1 + inst * 0.5);
+
+                        for (let i = 0; i <= points * 2; i++) {
+                            const angle = (i * Math.PI) / points + rotationOffset;
+                            // Salto de vértices para crear estrellas agudas
+                            const r = i % 2 === 0 ? radius + (normBass * 40) : radius * 0.4 - (normHighs * 20);
+                            
+                            const x = cx + Math.cos(angle) * r;
+                            const y = cy + Math.sin(angle) * r;
+
+                            if (i === 0) ctx.moveTo(x, y);
+                            else ctx.lineTo(x, y);
+                        }
+                        ctx.closePath();
+                        ctx.stroke();
+                    }
+
+                    // Anillo energético interior cruzado
+                    ctx.beginPath();
+                    ctx.strokeStyle = config.secondaryColor;
+                    ctx.arc(cx, cy, 25 + (normBass * 30), 0, Math.PI * 2);
+                    ctx.setLineDash([10, 15]);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+                // ==========================================
+                // MODO RELAX: LOTO CUÁNTICO LÍQUIDO (Curvas continuas y orgánicas)
+                // ==========================================
+                else if (currentMode === 'relax') {
+                    const layers = 5;
+                    const petals = 12; // Simetría armónica
+                    
+                    for (let l = 1; l <= layers; l++) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = l % 2 === 0 ? config.color : config.secondaryColor;
+                        ctx.lineWidth = 2 - (l * 0.2);
+                        
+                        // Rotación suave e interconectada
+                        const rotation = t * 0.2 * (l % 2 === 0 ? 1 : -1);
+                        const baseRadius = l * 25 + (normBass * 20);
+                        const petalLength = baseRadius + 30 + (normMids * 60);
+                        const petalWidth = 0.4 + (normHighs * 0.5); // Los agudos ensanchan los pétalos
+
+                        for (let i = 0; i <= petals; i++) {
+                            const angle = (i * 2 * Math.PI) / petals + rotation;
+                            const nextAngle = ((i + 1) * 2 * Math.PI) / petals + rotation;
+                            
+                            const x1 = cx + Math.cos(angle) * baseRadius;
+                            const y1 = cy + Math.sin(angle) * baseRadius;
+                            
+                            // Puntos de control para curvas de Bezier (crea el efecto líquido/loto)
+                            const cp1x = cx + Math.cos(angle + petalWidth) * petalLength;
+                            const cp1y = cy + Math.sin(angle + petalWidth) * petalLength;
+                            const cp2x = cx + Math.cos(nextAngle - petalWidth) * petalLength;
+                            const cp2y = cy + Math.sin(nextAngle - petalWidth) * petalLength;
+                            
+                            const x2 = cx + Math.cos(nextAngle) * baseRadius;
+                            const y2 = cy + Math.sin(nextAngle) * baseRadius;
+
+                            if (i === 0) ctx.moveTo(x1, y1);
+                            ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x2, y2);
+                        }
+                        ctx.stroke();
+                    }
+                }
+                // ==========================================
+                // MODO SLEEP: RESPIRACIÓN NEBULAR ÁUREA (Fractales de enjambre relajante)
+                // ==========================================
+                else if (currentMode === 'sleep') {
+                    const goldenAngle = 137.5 * (Math.PI / 180); // Ángulo áureo
+                    const numParticles = 250 + Math.floor(normMids * 100);
+                    
+                    // Modulación de respiración lenta
+                    const breath = Math.sin(t * 0.5) * 20;
+
+                    for (let i = 0; i < numParticles; i++) {
+                        // Crecimiento espiral fibonacci
+                        const radius = Math.sqrt(i) * (8 + normBass * 4) + breath;
+                        const angle = i * goldenAngle + t * 0.1;
+                        
+                        const x = cx + Math.cos(angle) * radius;
+                        const y = cy + Math.sin(angle) * radius;
+
+                        // Tamaño y color dinámico por profundidad
+                        const size = (1.5 + Math.sin(i * 0.1 + t)) * (1 + normBass);
+                        
+                        ctx.beginPath();
+                        ctx.fillStyle = i % 3 === 0 ? config.color : config.secondaryColor;
+                        // Difuminación profunda para efecto niebla
+                        ctx.shadowBlur = 8; 
+                        ctx.arc(x, y, Math.max(0.1, size), 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+
+                // NÚCLEO CENTRAL LÍQUIDO EXTRA-REACTIVO PARA TODOS LOS MODOS
+                ctx.shadowBlur = 30;
+                ctx.shadowColor = config.color;
+                ctx.fillStyle = config.color;
+                ctx.beginPath();
+                ctx.arc(cx, cy, 5 + (normBass * 15), 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(cx, cy, 2 + (normBass * 6), 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.shadowBlur = 0; 
+            }
         }
 
         animationRef.current = requestAnimationFrame(updateCymaticsLoop);
@@ -190,7 +259,6 @@ export default function CosmicSymphony() {
             setIsPlaying(false);
         } else {
             try {
-                // Inicialización directa e inmediata en el stack síncrono del click para evadir bloqueos de iOS
                 if (!audioContextRef.current) {
                     initAudioContext(audioRef.current);
                 }
@@ -214,7 +282,6 @@ export default function CosmicSymphony() {
 
     return (
         <div className="flex flex-col items-center min-h-screen bg-[#030303] text-white p-4 md:p-6 font-sans w-full overflow-x-hidden">
-            {/* Atributos cruciales inyectados para prevenir la pantalla completa forzada en Safari Móvil */}
             <audio 
                 ref={audioRef} 
                 onEnded={() => setIsPlaying(false)} 
@@ -241,7 +308,6 @@ export default function CosmicSymphony() {
                     <button 
                         key={mode} 
                         onClick={() => {
-                            pathsRef.current = []; 
                             setCurrentMode(mode);
                         }} 
                         className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all border 
@@ -272,52 +338,17 @@ export default function CosmicSymphony() {
                 )}
             </div>
 
-            {/* MANDALA CONTENEDOR */}
+            {/* MANDALA CONTENEDOR CON CANVAS DE ALTA FRECUENCIA */}
             <div className="w-full max-w-xl flex justify-center mb-2 px-1">
-                <div className="group relative bg-black rounded-full border border-cyan-950/40 shadow-[0_0_40px_rgba(0,0,0,0.9)] flex items-center justify-center p-4 w-full aspect-square max-w-[340px] md:max-w-[420px] overflow-hidden">
+                <div className="group relative bg-black rounded-full border border-cyan-950/40 shadow-[0_0_40px_rgba(0,0,0,0.9)] flex items-center justify-center p-2 w-full aspect-square max-w-[340px] md:max-w-[420px] overflow-hidden">
                     
-                    {/* MOTOR DE RENDERIZADO */}
-                    <svg viewBox="0 0 300 300" className="w-full h-full">
-                        <defs>
-                            <filter id="glow-cymatic" x="-30%" y="-30%" width="160%" height="160%">
-                                <feGaussianBlur stdDeviation="4.5" result="blur" />
-                                <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                            </filter>
-                        </defs>
-
-                        <g style={{ filter: 'url(#glow-cymatic)' }}>
-                            {rings.map((_, i) => (
-                                <path
-                                    key={`cymatic-ring-${currentMode}-${i}`}
-                                    ref={(el) => { pathsRef.current[i] = el; }}
-                                    fill="none"
-                                    stroke={i % 2 === 0 ? config.color : config.secondaryColor}
-                                    strokeWidth={currentMode === 'focus' ? 0.65 : (currentMode === 'relax' ? 1.1 : 1.6 - i * 0.12)}
-                                    opacity={currentMode === 'sleep' ? 0.2 + (i * 0.06) : 0.3}
-                                    className="transition-all duration-150 ease-out"
-                                />
-                            ))}
-                        </g>
-
-                        {/* NÚCLEO CENTRAL DINÁMICO */}
-                        <circle
-                            ref={coreGlowRef}
-                            cx="150"
-                            cy="150"
-                            r={currentMode === 'sleep' ? 14 : 22}
-                            fill={config.color}
-                            opacity="0.75"
-                            style={{ filter: 'url(#glow-cymatic)' }}
-                        />
-                        <circle
-                            ref={coreCenterRef}
-                            cx="150"
-                            cy="150"
-                            r={currentMode === 'sleep' ? 8 : 12}
-                            fill="#ffffff"
-                            opacity="0.95"
-                        />
-                    </svg>
+                    {/* MOTOR DE RENDERIZADO CUÁNTICO */}
+                    <canvas 
+                        ref={canvasRef} 
+                        width={500} 
+                        height={500} 
+                        className="w-full h-full rounded-full"
+                    />
 
                     {/* INTERFAZ FLOTANTE */}
                     <div className={`absolute inset-0 flex items-center justify-center pointer-events-none rounded-full transition-all duration-300
