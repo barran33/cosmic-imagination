@@ -1,7 +1,10 @@
 'use client';
 
-import React, { useState, memo } from 'react';
-import { Loader2, SlidersHorizontal, CheckCircle, PenTool, Sparkles, Zap, Flame, Droplets, Compass } from 'lucide-react';
+import React, { useState, memo, useRef, useMemo } from 'react';
+import { 
+    Loader2, SlidersHorizontal, CheckCircle, PenTool, Sparkles, 
+    Zap, Flame, Droplets, Compass, Download, Activity, Gauge, Infinity 
+} from 'lucide-react';
 
 // --- 1. CONFIGURACIÓN DE ENDPOINT ---
 const API_HOST = process.env.NEXT_PUBLIC_API_URL || 'https://api.cosmic-imagination.com';
@@ -16,12 +19,12 @@ interface TransmutationResult {
   frequency_hz: number;
   geometry_nodes: GeometryNode[];
   glow_color: string;
-  secondary_color?: string; // Sincronizado para heredar paletas infinitas
+  secondary_color?: string;
   elements: string[];
   alchemy_status: string;
 }
 
-// --- 2. SUBCOMPONENTE DE CONTROLES ---
+// --- 2. SUBCOMPONENTE DE CONTROLES Y TELEMETRÍA ---
 const ParameterPanel = memo(({ 
     scenePrompt, 
     setScenePrompt, 
@@ -38,6 +41,42 @@ const ParameterPanel = memo(({
         }
     };
 
+    // --- CÁLCULO DE TELEMETRÍA CUÁNTICA INTERNA ---
+    const telemetry = useMemo(() => {
+        if (!result || !result.geometry_nodes || result.geometry_nodes.length === 0) return null;
+        
+        const nodes = result.geometry_nodes;
+        const totalNodes = nodes.length;
+        const hz = result.frequency_hz || 432;
+
+        // 1. Simulación determinista de Arquetipo según nodos y resonancia
+        let archetype = "Vórtice Lineal";
+        if (totalNodes % 5 === 0) archetype = "Pentagrama Sagrado";
+        else if (totalNodes % 6 === 0) archetype = "Cubo de Metatrón";
+        else if (totalNodes % 8 === 0) archetype = "Merkaba Activo";
+        else if (hz > 700) archetype = "Vórtice Toroidal";
+        else if (hz > 400) archetype = "Flor de la Vida";
+
+        // 2. Cálculo de Coherencia Área (Simulado estable basado en la dispersión de distancias)
+        let totalDistance = 0;
+        let count = 0;
+        for (let i = 0; i < Math.min(nodes.length, 10); i++) {
+            for (let j = i + 1; j < Math.min(nodes.length, 10); j++) {
+                const dist = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
+                totalDistance += dist;
+                count++;
+            }
+        }
+        const avgDist = count > 0 ? totalDistance / count : 100;
+        const goldenRatioScore = Math.min(99.8, Math.max(74.5, (avgDist % 25) + 75)).toFixed(1);
+
+        // 3. Entropía Dimensional
+        const entropyIndex = ((hz * totalNodes) % 100) / 100;
+        const entropy = Math.min(0.95, Math.max(0.12, entropyIndex)).toFixed(2);
+
+        return { archetype, goldenRatioScore, entropy };
+    }, [result]);
+
     return (
         <div className="flex flex-col items-start p-4 bg-black/80 border border-cyan-500/30 rounded-xl shadow-[0_0_30px_rgba(6,182,212,0.1)] w-full max-w-2xl backdrop-blur-md transition-all duration-500">
             
@@ -51,10 +90,6 @@ const ParameterPanel = memo(({
                     <PenTool className='w-3 h-3 mr-2 text-cyan-400' /> 
                     Discover the geometric pattern of the word:
                 </label>
-                {/* FIX RESPONSIVO: Se cambia de 'text-xs' a 'text-base md:text-xs'.
-                  Al tener 16px (text-base) en pantallas móviles, el sistema operativo
-                  cancela el auto-zoom forzado y la pantalla se mantiene fija y fluida.
-                */}
                 <textarea
                     value={scenePrompt}
                     onChange={(e) => setScenePrompt(e.target.value)}
@@ -67,27 +102,56 @@ const ParameterPanel = memo(({
 
             {/* STATUS EN TIEMPO REAL */}
             {result && (
-                <div className="w-full grid grid-cols-3 gap-2 p-2.5 bg-neutral-950/60 border border-neutral-900 rounded-lg text-[10px] items-center animate-fadeIn">
-                    <div className="flex flex-col border-r border-neutral-800/80">
-                        <span className="text-neutral-500 uppercase font-medium tracking-mono">Status</span>
-                        <span className="text-emerald-400 font-bold tracking-wide truncate flex items-center gap-1 mt-0.5">
-                            <CheckCircle className="w-2.5 h-2.5 animate-bounce" /> Transmuted
-                        </span>
+                <div className="w-full space-y-2 animate-fadeIn">
+                    <div className="w-full grid grid-cols-3 gap-2 p-2.5 bg-neutral-950/60 border border-neutral-900 rounded-lg text-[10px] items-center">
+                        <div className="flex flex-col border-r border-neutral-800/80">
+                            <span className="text-neutral-500 uppercase font-medium tracking-mono">Status</span>
+                            <span className="text-emerald-400 font-bold tracking-wide truncate flex items-center gap-1 mt-0.5">
+                                <CheckCircle className="w-2.5 h-2.5 animate-bounce" /> Transmuted
+                            </span>
+                        </div>
+                        <div className="flex flex-col border-r border-neutral-800/80 pl-2">
+                            <span className="text-neutral-500 uppercase font-medium tracking-mono">Resonance</span>
+                            <span className="text-white font-mono font-bold tracking-widest mt-0.5">{result.frequency_hz} Hz</span>
+                        </div>
+                        <div className="flex flex-col pl-2">
+                            <span className="text-neutral-500 uppercase font-medium tracking-mono">Elements</span>
+                            <span className="text-cyan-400 font-semibold font-mono uppercase tracking-tighter truncate flex items-center mt-0.5">
+                                {result.elements.map((el: string) => (
+                                    <span key={el} className="flex items-center mr-1">
+                                        {getElementIcon(el)}{el}
+                                    </span>
+                                ))}
+                            </span>
+                        </div>
                     </div>
-                    <div className="flex flex-col border-r border-neutral-800/80 pl-2">
-                        <span className="text-neutral-500 uppercase font-medium tracking-mono">Resonance</span>
-                        <span className="text-white font-mono font-bold tracking-widest mt-0.5">{result.frequency_hz} Hz</span>
-                    </div>
-                    <div className="flex flex-col pl-2">
-                        <span className="text-neutral-500 uppercase font-medium tracking-mono">Elements</span>
-                        <span className="text-cyan-400 font-semibold font-mono uppercase tracking-tighter truncate flex items-center mt-0.5">
-                            {result.elements.map((el: string) => (
-                                <span key={el} className="flex items-center mr-1">
-                                    {getElementIcon(el)}{el}
-                                </span>
-                            ))}
-                        </span>
-                    </div>
+
+                    {/* NUEVO PANEL: TELEMETRÍA DE LA MATRIZ */}
+                    {telemetry && (
+                        <div className="w-full grid grid-cols-3 gap-2 p-2.5 bg-neutral-950/30 border border-cyan-950/40 rounded-lg text-[9px] items-center text-zinc-400 font-mono">
+                            <div className="flex items-center gap-1.5 border-r border-neutral-900/80 pr-1 truncate">
+                                <Infinity className="w-3 h-3 text-cyan-500/70" />
+                                <div className="flex flex-col truncate">
+                                    <span className="text-zinc-600 uppercase text-[8px]">Archetype</span>
+                                    <span className="text-cyan-300/90 font-medium truncate">{telemetry.archetype}</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-1.5 border-r border-neutral-900/80 pl-1">
+                                <Gauge className="w-3 h-3 text-indigo-400/70" />
+                                <div className="flex flex-col">
+                                    <span className="text-zinc-600 uppercase text-[8px]">Golden Ratio</span>
+                                    <span className="text-indigo-300 font-bold">{telemetry.goldenRatioScore}%</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-1.5 pl-1">
+                                <Activity className="w-3 h-3 text-purple-400/70" />
+                                <div className="flex flex-col">
+                                    <span className="text-zinc-600 uppercase text-[8px]">Entropy Δ</span>
+                                    <span className="text-purple-300 font-bold">{telemetry.entropy}</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
         </div>
@@ -101,6 +165,9 @@ export default function DeepDreamEngine() {
     const [isGenerating, setIsGenerating] = useState(false);
     const [scenePrompt, setScenePrompt] = useState('');
     const [result, setResult] = useState<TransmutationResult | null>(null);
+    
+    // Referencia al elemento SVG para permitir la extracción del vector
+    const svgRef = useRef<SVGSVGElement>(null);
 
     const handleTransmutation = async () => {
         if (!scenePrompt.trim()) return;
@@ -124,7 +191,40 @@ export default function DeepDreamEngine() {
         }
     };
 
-    // FUNCIÓN GENERADORA DE DERIVACIÓN FRACTAL (Geometría Sagrada de Alta Densidad Estilizada)
+    // --- FUNCIÓN NATIVA DE DESCARGA VECTORIAL SVG ---
+    const downloadMatrixSVG = () => {
+        if (!svgRef.current || !result) return;
+
+        try {
+            const svgElement = svgRef.current;
+            // Se clona el elemento para no romper el renderizado activo en el DOM
+            const clonedSvg = svgElement.cloneNode(true) as SVGSVGElement;
+            
+            // Remover clases de animación de rotación infinita para que el diseño quede estático al importarse en Illustrator/Figma
+            clonedSvg.removeAttribute('class');
+            clonedSvg.setAttribute('width', '800');
+            clonedSvg.setAttribute('height', '800');
+            clonedSvg.setAttribute('viewBox', '0 0 300 300');
+            clonedSvg.style.background = '#030303';
+
+            const svgString = new XMLSerializer().serializeToString(clonedSvg);
+            const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            
+            const downloadLink = document.createElement('a');
+            const sanitizedName = scenePrompt.trim().toLowerCase().replace(/[^a-z0-9]/g, '_');
+            downloadLink.href = url;
+            downloadLink.download = `cosmic_matrix_${sanitizedName || 'blueprint'}.svg`;
+            
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error("Failed to extract vector matrix:", err);
+        }
+    };
+
     const renderMandalaLayers = () => {
         if (!result || !result.geometry_nodes.length) return null;
 
@@ -134,7 +234,6 @@ export default function DeepDreamEngine() {
         const activeColor = result.glow_color || "#22d3ee";
         const fallbackSecondary = result.secondary_color || activeColor;
 
-        // Saltos armónicos adaptables basados en la resonancia recibida
         const step1 = 1;
         const step2 = Math.max(2, Math.floor((hz % 4) + 2)); 
         const step3 = Math.max(5, Math.floor(total / 2)); 
@@ -143,14 +242,13 @@ export default function DeepDreamEngine() {
             const rx = point.x;
             const ry = point.y;
 
-            // Nodos entrelazados nativos puros
             const p1 = nodes[(index + step1) % total];
             const p2 = nodes[(index + step2) % total];
             const p3 = nodes[(index + step3) % total];
 
             return (
                 <g key={`mandala-vertex-${index}`} className="transition-all duration-700 ease-in-out">
-                    {/* Capa de Red 1: Perímetro de Contención Energética */}
+                    {/* Capa de Red 1 */}
                     {p1 && (
                         <line
                             x1={rx} y1={ry} x2={p1.x} y2={p1.y}
@@ -161,7 +259,7 @@ export default function DeepDreamEngine() {
                         />
                     )}
                     
-                    {/* Capa de Red 2: Cruces Armónicos Sagrados (Pétalos de Loto / Estrellas) */}
+                    {/* Capa de Red 2 */}
                     {p2 && (
                         <>
                             <line
@@ -172,7 +270,6 @@ export default function DeepDreamEngine() {
                                 strokeDasharray={hz % 2 === 0 ? "none" : "4,3"}
                                 style={{ filter: 'url(#cosmic-glow-light)' }}
                             />
-                            {/* Partícula de Luz Orbitante en los canales armónicos secundarios */}
                             {index % 3 === 0 && (
                                 <circle r="1.5" fill="#ffffff">
                                     <animateMotion 
@@ -185,7 +282,7 @@ export default function DeepDreamEngine() {
                         </>
                     )}
 
-                    {/* Capa de Red 3: Red de Expansión del Núcleo */}
+                    {/* Capa de Red 3 */}
                     {p3 && (
                         <line
                             x1={rx} y1={ry} x2={p3.x} y2={p3.y}
@@ -196,7 +293,7 @@ export default function DeepDreamEngine() {
                         />
                     )}
                     
-                    {/* Nodos de Conciencia Cristalina (Efecto Lente Esférico Glow) */}
+                    {/* Nodos de Conciencia */}
                     <circle
                         cx={rx}
                         cy={ry}
@@ -210,7 +307,6 @@ export default function DeepDreamEngine() {
                             transformOrigin: `${rx}px ${ry}px`
                         }}
                     />
-                    {/* Núcleo hiper-brillante interno del nodo */}
                     <circle cx={rx} cy={ry} r="1" fill="#ffffff" />
                 </g>
             );
@@ -230,10 +326,9 @@ export default function DeepDreamEngine() {
                 </p>
             </header>
 
-            {/* CANVAS AREA (Rotación fluida y resplandor adaptativo de fondo) */}
+            {/* CANVAS AREA */}
             <div className="w-full flex justify-center mb-5">
                 <div className="relative group max-w-full">
-                    {/* Efecto Aura Aurora detrás de la matriz */}
                     <div 
                         className="absolute -inset-2 rounded-2xl blur-2xl opacity-10 group-hover:opacity-20 transition duration-1000"
                         style={{ 
@@ -247,7 +342,17 @@ export default function DeepDreamEngine() {
                     >
                         {result ? (
                             <div className="flex flex-col items-center justify-center w-full h-full relative">
+                                {/* BOTÓN FLOTANTE PARA DESCARGA DIRECTA DE VECTOR */}
+                                <button
+                                    onClick={downloadMatrixSVG}
+                                    title="Extract Matrix Blueprint (SVG)"
+                                    className="absolute top-2 right-2 p-2 rounded-lg bg-neutral-950/80 border border-neutral-800/80 text-zinc-400 hover:text-cyan-400 hover:border-cyan-500/40 transition-all z-10 backdrop-blur-sm group/btn"
+                                >
+                                    <Download className="w-3.5 h-3.5 group-hover/btn:scale-110 transition-transform" />
+                                </button>
+
                                 <svg 
+                                    ref={svgRef}
                                     width="100%" 
                                     height="100%" 
                                     viewBox="0 0 300 300" 
@@ -255,7 +360,6 @@ export default function DeepDreamEngine() {
                                     style={{ willChange: 'transform' }}
                                 >
                                     <defs>
-                                        {/* Filtro de Resplandor Alquímico Pesado */}
                                         <filter id="cosmic-glow-heavy" x="-40%" y="-40%" width="180%" height="180%">
                                             <feGaussianBlur stdDeviation="4" result="blur1" />
                                             <feGaussianBlur stdDeviation="1.5" result="blur2" />
@@ -266,7 +370,6 @@ export default function DeepDreamEngine() {
                                             </feMerge>
                                         </filter>
 
-                                        {/* Filtro de Resplandor Sutil */}
                                         <filter id="cosmic-glow-light" x="-20%" y="-20%" width="140%" height="140%">
                                             <feGaussianBlur stdDeviation="1" result="blur" />
                                             <feMerge>
@@ -276,11 +379,9 @@ export default function DeepDreamEngine() {
                                         </filter>
                                     </defs>
 
-                                    {/* Capas de geometría sagrada */}
                                     {renderMandalaLayers()}
                                 </svg>
                                 
-                                {/* Status inferior estilizado y corregido */}
                                 <span 
                                     className="absolute bottom-2 text-[8px] tracking-[0.25em] uppercase font-mono px-3 py-1 bg-neutral-950/80 border border-neutral-900 rounded-full shadow-md backdrop-blur-sm max-w-[85%] truncate transition-all duration-300"
                                     style={{ color: result.glow_color, textShadow: `0 0 8px ${result.glow_color}40` }}
