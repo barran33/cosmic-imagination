@@ -332,7 +332,7 @@ export default function HomePage() {
               </h3>
             </div>
             
-            <h2 className="text-3xl md:text-4xl font-extralight tracking-wider text-white uppercase">
+            <h2 className="text-3xl md:text-4xl text-neon-glow-css  font-extralight tracking-wider text-white uppercase">
               Explore our <span className="text-cyan-400 font-normal drop-shadow-[0_0_12px_rgba(6,182,212,0.6)]">galaxy of projects</span>
             </h2>
             
@@ -342,28 +342,28 @@ export default function HomePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8 text-left">
               <div className="p-8 rounded-[2rem] bg-neutral-950/20 border border-neutral-900/80 backdrop-blur-xl shadow-[0_8px_32_rgba(0,0,0,0.5)]">
-                <h4 className="text-sm font-mono text-cyan-400 tracking-widest uppercase mb-3 drop-shadow-[0_0_4px_rgba(6,182,212,0.3)]">
+                <h4 className="text-sm font-mono text-neon-glow-css  text-cyan-400 tracking-widest uppercase mb-3 drop-shadow-[0_0_4px_rgba(6,182,212,0.3)]">
                     📜 Cosmic Architect
                 </h4>
-                <p className="text-sm text-white leading-relaxed tracking-wide font-light">
+                <p className="text-sm text-white   leading-relaxed tracking-wide font-light">
                     The pure transmutation of the word. Through this quantum engine, you can **discover the hidden geometric pattern behind words**, revealing the mathematical signature and metaphysical element that governs your thoughts.
                 </p>
               </div>
 
               <div className="p-8 rounded-[2rem] bg-neutral-950/20 border border-neutral-900/80 backdrop-blur-xl shadow-[0_8px_32_rgba(0,0,0,0.5)]">
-                <h4 className="text-sm font-mono text-cyan-400 tracking-widest uppercase mb-3 drop-shadow-[0_0_4px_rgba(6,182,212,0.3)]">
+                <h4 className="text-sm font-mono text-cyan-400 text-neon-glow-css tracking-widest uppercase mb-3 drop-shadow-[0_0_4px_rgba(6,182,212,0.3)]">
                     ⚛️ Cosmic Symphony
                 </h4>
-                <p className="text-sm text-white leading-relaxed tracking-wide font-light">
+                <p className="text-sm text-white  leading-relaxed tracking-wide font-light">
                     The ancient art of **cymatics** made code. Here you interact directly with elemental vibration, injecting acoustic frequencies to **give visual form to sound** in real time, tuning your brainwaves to states of focus, relaxation, or orbital sleep.
                 </p>
               </div>
 
               <div className="p-8 rounded-[2rem] bg-neutral-950/20 border border-neutral-900/80 backdrop-blur-xl shadow-[0_8px_32_rgba(0,0,0,0.5)]">
-                <h4 className="text-sm font-mono text-cyan-400 tracking-widest uppercase mb-3 drop-shadow-[0_0_4px_rgba(6,182,212,0.3)]">
+                <h4 className="text-sm text-neon-glow-css font-mono text-cyan-400 tracking-widest uppercase mb-3 drop-shadow-[0_0_4px_rgba(6,182,212,0.3)]">
                     ⭐ Divine Flow
                 </h4>
-                <p className="text-sm text-white leading-relaxed tracking-wide font-light">
+                <p className="text-sm text-white   leading-relaxed tracking-wide font-light">
                     Visualizing the cosmic order. Using the sacred structure of the star, this system allows you to map and **observe the different types of divine and universal flows**, translating quantum entanglement and the interconnectedness of everything into harmonic visual currents.
                 </p>
               </div>
