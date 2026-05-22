@@ -142,21 +142,28 @@ export default function HomePage() {
       .shadow-neon-light {
         box-shadow: 0 0 5px rgba(0, 255, 255, 0.6), 0 0 20px rgba(0, 255, 255, 0.3);
       }
+      
+      /* OPTIMIZACIÓN CÓSMICA PARA PORTAL EN MÓVILES (GPU ENABLED) */
       @keyframes cosmic-vortex-supreme {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        0% { transform: translate3d(0,0,0) rotate(0deg); }
+        100% { transform: translate3d(0,0,0) rotate(360deg); }
       }
       @keyframes cosmic-float-supreme {
-        0%, 100% { transform: translateY(0px) scale(1); }
-        50% { transform: translateY(-15px) scale(1.03); }
+        0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+        50% { transform: translate3d(0, -12px, 0) scale(1.02); }
       }
+      
       .animate-vortex-supreme {
         animation: cosmic-vortex-supreme 55s linear infinite;
         will-change: transform;
+        transform-style: preserve-3d;
+        backface-visibility: hidden;
       }
       .animate-float-supreme {
-        animation: cosmic-float-supreme 8s ease-in-out infinite;
+        animation: cosmic-float-supreme 9s ease-in-out infinite;
         will-change: transform;
+        transform-style: preserve-3d;
+        backface-visibility: hidden;
       }
     `;
     document.head.appendChild(style);
@@ -178,44 +185,42 @@ export default function HomePage() {
       
       {/* CAPA DE DESTELLOS Y PARTICULAS FLOTANTES CUÁNTICAS */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-  {/* Fondo de brillo ambiental */}
-  <div className="absolute top-[20%] left-[50%] -translate-x-1/2 w-[800px] h-[800px] bg-cyan-500/10 blur-[150px] rounded-full" />
+        {/* Fondo de brillo ambiental */}
+        <div className="absolute top-[20%] left-[50%] -translate-x-1/2 w-[800px] h-[800px] bg-cyan-500/10 blur-[150px] rounded-full" />
 
-  {mounted && [...Array(270)].map((_, idx) => {
-    const isLarge = idx % 10 === 0; 
-    return (
-      <motion.div
-        key={`space-particle-${idx}`}
-        className="absolute rounded-full"
-        style={{
-          top: `${Math.random() * 100}%`,
-          left: `${Math.random() * 100}%`,
-          // Tamaño ligeramente mayor para mayor presencia
-          width: isLarge ? '6px' : '3px',
-          height: isLarge ? '4px' : '2px',
-          backgroundColor: '#a5f3fc', // Un cian más claro para más brillo
-          boxShadow: isLarge 
-            ? '0 0 12px 3px #22d3ee, 0 0 24px 6px rgba(6, 182, 212, 0.6)' 
-            : '0 0 8px 2px #22d3ee',
-        }}
-        animate={{
-          y: [0, Math.random() * -100 - 50],
-          // Opacidad más alta para que no se sientan invisibles
-          opacity: [0, 0.9, 0.9, 0], 
-          scale: [0, 1.2, 1.2, 0],
-        }}
-        transition={{
-          duration: Math.random() * 8 + 8,
-          repeat: Infinity,
-          ease: "linear",
-          delay: Math.random() * 10,
-          // Mantenemos el brillo en el centro de la animación
-          times: [0, 0.2, 0.8, 1] 
-        }}
-      />
-    );
-  })}
-</div>
+        {mounted && [...Array(270)].map((_, idx) => {
+          const isLarge = idx % 10 === 0; 
+          return (
+            <motion.div
+              key={`space-particle-${idx}`}
+              className="absolute rounded-full"
+              style={{
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                width: isLarge ? '6px' : '3px',
+                height: isLarge ? '4px' : '2px',
+                backgroundColor: '#a5f3fc',
+                boxShadow: isLarge 
+                  ? '0 0 12px 3px #22d3ee, 0 0 24px 6px rgba(6, 182, 212, 0.6)' 
+                  : '0 0 8px 2px #22d3ee',
+              }}
+              animate={{
+                y: [0, Math.random() * -100 - 50],
+                opacity: [0, 0.9, 0.9, 0], 
+                scale: [0, 1.2, 1.2, 0],
+              }}
+              transition={{
+                duration: Math.random() * 8 + 8,
+                repeat: Infinity,
+                ease: "linear",
+                delay: Math.random() * 10,
+                times: [0, 0.2, 0.8, 1] 
+              }}
+            />
+          );
+        })}
+      </div>
+
       {/* HERO SECTION */}
       <section className="relative min-h-screen flex flex-col items-center justify-center text-center p-4 overflow-hidden z-10">
         <div className="relative flex flex-col items-center max-w-4xl mx-auto pt-8">

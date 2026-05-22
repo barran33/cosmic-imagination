@@ -51,13 +51,17 @@ const ParameterPanel = memo(({
                     <PenTool className='w-3 h-3 mr-2 text-cyan-400' /> 
                     Discover the geometric pattern of the word:
                 </label>
+                {/* FIX RESPONSIVO: Se cambia de 'text-xs' a 'text-base md:text-xs'.
+                  Al tener 16px (text-base) en pantallas móviles, el sistema operativo
+                  cancela el auto-zoom forzado y la pantalla se mantiene fija y fluida.
+                */}
                 <textarea
                     value={scenePrompt}
                     onChange={(e) => setScenePrompt(e.target.value)}
                     disabled={isGenerating}
                     rows={2}
                     placeholder="Describe what state or block you want to transmute (e.g., Caos y Bloqueo, Abundancia)..."
-                    className="w-full bg-neutral-950 text-cyan-100 border border-cyan-900/60 rounded-lg p-2.5 text-xs focus:ring-1 focus:ring-cyan-400 focus:border-transparent transition-all outline-none placeholder:text-zinc-700 shadow-inner resize-none duration-300"
+                    className="w-full bg-neutral-950 text-cyan-100 border border-cyan-900/60 rounded-lg p-2.5 text-base md:text-xs focus:ring-1 focus:ring-cyan-400 focus:border-transparent transition-all outline-none placeholder:text-zinc-700 shadow-inner resize-none duration-300"
                 />
             </div>
 
@@ -231,7 +235,7 @@ export default function DeepDreamEngine() {
                 <div className="relative group max-w-full">
                     {/* Efecto Aura Aurora detrás de la matriz */}
                     <div 
-                        className="absolute -inset-2 rounded-2xl blur-2xl opacity-10 group-hover:opacity-20 transition duration-1000 duration-700"
+                        className="absolute -inset-2 rounded-2xl blur-2xl opacity-10 group-hover:opacity-20 transition duration-1000"
                         style={{ 
                             background: result ? `radial-gradient(circle, ${result.glow_color} 0%, transparent 70%)` : 'radial-gradient(circle, #0891b2 0%, transparent 70%)' 
                         }}
