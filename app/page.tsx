@@ -367,7 +367,7 @@ export default function HomePage() {
                 <h4 className="text-sm font-mono text-cyan-400 tracking-widest uppercase mb-3 drop-shadow-[0_0_4px_rgba(6,182,212,0.3)]">
                     ⭐ Divine Flow
                 </h4>
-                <p className="text-sm text-neutral-400 leading-relaxed tracking-wide font-light">
+                <p className="text-sm text-white leading-relaxed tracking-wide font-light">
                     Visualizing the cosmic order. Using the sacred structure of the star, this system allows you to map and **observe the different types of divine and universal flows**, translating quantum entanglement and the interconnectedness of everything into harmonic visual currents.
                 </p>
               </div>
