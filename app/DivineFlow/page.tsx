@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 
-
 interface Particle {
   x: number; y: number; vx: number; vy: number; energy: number;
 }
@@ -110,11 +109,9 @@ export default function DivineFlowPage() {
       p.vy = Math.sin(angle) * force;
     });
 
-    // Definimos la constante base dinámicamente usando la variable de entorno
     const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.cosmic-imagination.com';
 
     try {
-      // 1. Cambiada la ruta a template literal con la base dinámica
       const response = await fetch(`${BASE_API_URL}/api/v1/cosmic-hologram`);
       if (response.ok) {
         const data = await response.json();
@@ -136,11 +133,9 @@ export default function DivineFlowPage() {
   };
 
   const triggerDeepMystery = async () => {
-    // Definimos la constante base aquí también para asegurar el alcance global en la función
     const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.cosmic-imagination.com';
 
     try {
-      // 2. Cambiada la ruta del misterio cósmico para usar la variable de entorno
       const response = await fetch(`${BASE_API_URL}/api/v1/cosmic-mystery`);
       if (response.ok) {
         const data = await response.json();
@@ -153,6 +148,7 @@ export default function DivineFlowPage() {
     const randomQuote = SCIENTIFIC_QUOTES[Math.floor(Math.random() * SCIENTIFIC_QUOTES.length)];
     setActiveMystery(randomQuote);
   };
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       mousePos.current = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
@@ -160,7 +156,7 @@ export default function DivineFlowPage() {
     }
   }, []);
 
-  // Loop de renderizado con dependencias estáticas (Renderizado Líquido sin interrupciones)
+  // Loop de renderizado con dependencias estáticas
   useEffect(() => {
     const handleResize = () => {
       if (canvasRef.current) {
@@ -199,7 +195,6 @@ export default function DivineFlowPage() {
       const w = canvas.width;
       const h = canvas.height;
 
-      // Lecturas estables mediante referencias continuas
       const mode = currentModeRef.current;
       const active = isActiveRef.current;
       const mystery = activeMysteryRef.current;
@@ -226,7 +221,6 @@ export default function DivineFlowPage() {
         smoothedStar.current.y += (mousePos.current.y - smoothedStar.current.y) * 0.08;
       }
 
-      // 1. SPARKS
       if (active && Math.random() > 0.7 && !mystery && sparks.current.length < 30) {
         sparks.current.push({
           x: smoothedStar.current.x, y: smoothedStar.current.y,
@@ -272,7 +266,6 @@ export default function DivineFlowPage() {
       }
       ctx.globalAlpha = 1;
 
-      // 2. PARTICLES UPDATE
       pList.forEach((p, i) => {
         if (!mystery) {
           p.vx += (Math.random() - 0.5) * 0.08;
@@ -334,7 +327,6 @@ export default function DivineFlowPage() {
         if (physicsModeTick.current === 0) activePhysicsMode.current = "NONE";
       }
 
-      // 3. NOVAS
       for (let i = novas.current.length - 1; i >= 0; i--) {
         const n = novas.current[i];
         n.life -= 0.02;
@@ -347,7 +339,6 @@ export default function DivineFlowPage() {
         ctx.beginPath(); ctx.arc(n.x, n.y, (1.5 - n.life) * n.size, 0, Math.PI * 2); ctx.stroke();
       }
 
-      // 4. HOLOGRAMS
       for (let i = holograms.current.length - 1; i >= 0; i--) {
         const h = holograms.current[i];
         h.life -= 0.01; 
@@ -397,7 +388,7 @@ export default function DivineFlowPage() {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('resize', handleResize);
     };
-  }, []); // Array de dependencias vacío asegurando una sola ejecución nativa permanente
+  }, []);
 
   const handlePressStart = (clientX: number, clientY: number) => {
     if (activeMystery) return; 
@@ -428,7 +419,7 @@ export default function DivineFlowPage() {
             {isActive ? 'SINGULARITY' : currentMode.toUpperCase()}
           </span>
         </h1>
-        <p className="text-white/30 text-[9px] md:text-[10px] mt-2 tracking-[0.5em] md:tracking-[0.6em] uppercase font-bold">
+        <p className="text-white/30 text-[9px] md:text-[10px] mt-2 tracking-[0.34em] md:tracking-[0.6em] uppercase font-bold break-words max-w-[calc(100vw-48px)]">
           {getSubTitle()}
         </p>
         
@@ -481,26 +472,46 @@ export default function DivineFlowPage() {
         </div>
       )}
 
-      {/* Mode Control Panel */}
-      <div className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 z-40 flex flex-col md:flex-row items-center gap-4 md:gap-8 bg-black/80 backdrop-blur-3xl border border-white/10 p-4 md:p-6 rounded-[2rem] md:rounded-[3rem] shadow-[0_0_60px_rgba(0,0,0,1)] transition-all max-w-[90%] md:max-w-none">
-        <div className="grid grid-cols-2 sm:flex gap-2 md:gap-4 w-full md:w-auto">
+      {/* --- PANEL DE CONTROL OPTIMIZADO ULTRA-RESPONSIVO --- */}
+      <div className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 z-40 flex flex-col md:flex-row items-center gap-4 md:gap-6 bg-black/80 backdrop-blur-3xl border border-white/10 p-4 md:p-5 rounded-[2rem] md:rounded-[3rem] shadow-[0_0_60px_rgba(0,0,0,1)] transition-all w-[calc(100%-32px)] sm:w-auto max-w-xl md:max-w-none">
+        
+        {/* Cambiado a flex-wrap con tamaños responsivos perfectos */}
+        <div className="flex flex-wrap justify-center gap-2 w-full md:w-auto">
           {['Normal', 'Entanglement', 'Gravity', 'Resonance'].map((m) => (
-            <button key={m} onClick={() => reseedParticles(m)}
-              className={`px-4 md:px-8 py-2.5 md:py-3 rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-bold uppercase tracking-widest transition-all ${
-                currentMode === m ? 'bg-white/20 text-white border-2' : 'text-white/30 hover:text-white'
+            <button 
+              key={m} 
+              onClick={() => reseedParticles(m)}
+              className={`flex-1 sm:flex-none text-center px-2.5 sm:px-6 md:px-8 py-2.5 rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-bold uppercase transition-all whitespace-nowrap min-w-[85px] sm:min-w-0 ${
+                currentMode === m 
+                  ? 'bg-white/20 text-white border-2' 
+                  : 'text-white/40 hover:text-white bg-neutral-900/30 md:bg-transparent'
               }`}
-              style={{ borderColor: currentMode === m ? (isActive ? '#ff00ff' : accentColor) : 'transparent' }}>
+              style={{ 
+                borderColor: currentMode === m ? (isActive ? '#ff00ff' : accentColor) : 'transparent',
+                letterSpacing: typeof window !== 'undefined' && window.innerWidth < 640 ? '0.08em' : '0.18em'
+              }}
+            >
               {m}
             </button>
           ))}
         </div>
-        <div className="hidden md:block h-10 w-[1px] bg-white/20" />
-        <div className="flex items-center gap-2 mt-2 md:mt-0">
-          <span className="text-[8px] font-mono text-neutral-500 uppercase md:hidden">// Accent:</span>
-          <input type="color" value={accentColor} onChange={(e) => setAccentColor(e.target.value)} 
-                 className="w-8 h-8 md:w-10 md:h-10 bg-transparent cursor-pointer rounded-full border-none p-0 overflow-hidden" />
+
+        {/* Separador e Input de Color alineados y responsivos */}
+        <div className="hidden md:block h-8 w-[1px] bg-white/20" />
+        
+        <div className="flex items-center justify-between md:justify-start gap-3 w-full md:w-auto pt-2 md:pt-0 border-t border-white/5 md:border-t-0">
+          <span className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">// ACCENT FREQUENCY:</span>
+          <div className="relative w-7 h-7 md:w-8 md:h-8 rounded-full border border-white/20 overflow-hidden flex items-center justify-center bg-neutral-900">
+            <input 
+              type="color" 
+              value={accentColor} 
+              onChange={(e) => setAccentColor(e.target.value)} 
+              className="absolute w-[150%] h-[150%] cursor-pointer border-none p-0 bg-transparent transform scale-150" 
+            />
+          </div>
         </div>
       </div>
+
     </main>
   );
 }
