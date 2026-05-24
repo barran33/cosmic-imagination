@@ -17,11 +17,14 @@ const AstronautWidget = () => {
       transition={{ duration: 1.2, ease: "easeOut", delay: 0.5 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      // CORRECCIÓN RESPONSIVA: Esquina inferior derecha estable, con espaciado adaptable
+      style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
       className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50 pointer-events-auto cursor-pointer group"
     >
-      {/* CORRECCIÓN DE ESCALA: Contenedor compacto en móviles (w-20 h-28) y completo en escritorio (md:w-32 md:h-44) */}
-      <div className="relative w-20 h-28 md:w-32 md:h-44 flex flex-col items-center justify-center animate-float-supreme">
+      {/* Contenedor compacto optimizado con aceleración por hardware */}
+      <div 
+        style={{ willChange: "transform", transform: "translateZ(0)" }}
+        className="relative w-20 h-28 md:w-32 md:h-44 flex flex-col items-center justify-center animate-float-supreme"
+      >
         
         {/* Aura de energía cuántica trasera (Se expande en Hover) */}
         <div className="absolute inset-0 bg-cyan-500/0 rounded-full blur-2xl group-hover:bg-cyan-500/10 transition-all duration-700" />
@@ -57,6 +60,7 @@ const AstronautWidget = () => {
               fill="none" 
               stroke="#FFFFFF" 
               strokeWidth="1.5" 
+              style={{ willChange: "opacity, pathLength" }}
               animate={{ opacity: isHovered ? [0.7, 1, 0.7] : 0.7, pathLength: isHovered ? [0.8, 1, 0.8] : 1 }}
               transition={{ duration: 1.5, repeat: Infinity }}
             />
@@ -69,6 +73,7 @@ const AstronautWidget = () => {
             <motion.path 
               d="M36 55 Q50 52 64 55 L60 80 Q50 82 40 80 Z" 
               fill="#ffffff" 
+              style={{ willChange: "d" }}
               animate={{ d: ["M36 55 Q50 52 64 55 L60 80 Q50 82 40 80 Z", "M36 54 Q50 51 64 54 L61 80 Q50 83 39 80 Z", "M36 55 Q50 52 64 55 L60 80 Q50 82 40 80 Z"] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             />
@@ -80,7 +85,7 @@ const AstronautWidget = () => {
               stroke="#ffffff" 
               strokeWidth="7" 
               strokeLinecap="round"
-              style={{ transformOrigin: "36px 56px" }}
+              style={{ transformOrigin: "36px 56px", willChange: "transform, d" }}
               animate={isHovered ? { 
                 d: [
                   "M36 56 Q20 40 18 26", 
@@ -107,7 +112,7 @@ const AstronautWidget = () => {
               stroke="#ffffff" 
               strokeWidth="7" 
               strokeLinecap="round"
-              style={{ transformOrigin: "64px 56px" }}
+              style={{ transformOrigin: "64px 56px", willChange: "transform" }}
               animate={isHovered ? { rotate: [0, 5, -3, 0] } : { rotate: 0 }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             />
@@ -133,7 +138,7 @@ const AstronautWidget = () => {
               stroke="#22D3EE" 
               strokeWidth="1"
               opacity="0.8"
-              style={{ filter: 'url(#neon-glow)' }}
+              style={{ filter: 'url(#neon-glow)', willChange: "d, opacity" }}
               animate={isHovered 
                 ? { d: ["M38 7 L50 18 L62 7", "M38 7 L50 14 L62 7", "M38 7 L50 18 L62 7"], opacity: [0.7, 1, 0.7] }
                 : { d: ["M38 7 L50 16 L62 7", "M38 7 L50 12 L62 7", "M38 7 L50 16 L62 7"], opacity: [0.5, 0.8, 0.5] }
@@ -143,7 +148,7 @@ const AstronautWidget = () => {
           </g>
         </svg>
 
-        {/* CORRECCIÓN DE DESBORDAMIENTO: Tag de Telemetría oculto en móviles (`hidden md:inline-block`) */}
+        {/* Tag de Telemetría oculto en móviles */}
         <span className="hidden md:inline-block absolute -bottom-4 font-mono text-[9px] tracking-[0.2em] text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 uppercase whitespace-nowrap bg-black/80 px-3 py-1 border border-cyan-500/30 rounded backdrop-blur-md">
           SYSTEM_RIDER // ACTIVE
         </span>
@@ -160,6 +165,7 @@ const NeonTitle = ({ text }: { text: string }) => (
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 1 }}
+    style={{ willChange: "transform, opacity" }}
     className="text-center font-extrabold text-cyan-300 text-neon-glow-css whitespace-nowrap 
                text-4xl sm:text-5xl md:text-6xl lg:text-7xl select-none" 
   >
@@ -172,6 +178,7 @@ const NeonButton = ({ onClick }: { onClick: () => void }) => (
     <motion.div
       whileHover={{ scale: 1.05, boxShadow: '0 0 12px #00FFFF, 0 0 35px rgba(0, 255, 255, 0.5)' }} 
       whileTap={{ scale: 0.95 }}
+      style={{ willChange: "transform, box-shadow" }}
       className="mt-8 px-8 py-3 bg-neutral-950/60 text-cyan-300 font-bold uppercase border border-cyan-400/80 rounded-full tracking-widest cursor-pointer transition-all duration-300 shadow-neon-light text-neon-glow-css backdrop-blur-sm"
     >
       <div className="flex items-center justify-center gap-2">
@@ -195,6 +202,7 @@ const FeaturedProjects = () => (
         initial={{ opacity: 0, y: 10 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.5 }}
+        style={{ willChange: "transform, opacity" }}
         className="text-center text-lg uppercase tracking-widest text-cyan-400 text-neon-glow-css mb-2"
       >
         Galantic Portfolio
@@ -204,6 +212,7 @@ const FeaturedProjects = () => (
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
         viewport={{ once: true, amount: 0.5 }}
+        style={{ willChange: "transform, opacity" }}
         className="text-4xl md:text-5xl font-extralight text-cyan-100 text-center mb-16 uppercase tracking-tight"
       >
         High-Frequency <span className="text-cyan-400 font-normal drop-shadow-[0_0_10px_rgba(6,182,212,0.5)]">Projects</span>
@@ -223,6 +232,7 @@ const FeaturedProjects = () => (
                   borderColor: 'rgba(18, 210, 239, 0.67)',
                   boxShadow: '0 0 30px rgba(6, 182, 212, 0.15), inset 0 0 15px rgba(6, 182, 212, 0.05)' 
                 }}
+                style={{ willChange: "transform, opacity, box-shadow" }}
                 className="relative overflow-hidden bg-neutral-950/20 backdrop-blur-xl border border-neutral-900/80 p-8 rounded-[2rem] transition-all duration-500 cursor-pointer flex flex-col items-start h-full shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
               >
                 <div className="absolute top-0 left-0 w-48 h-48 bg-gradient-to-br from-cyan-500/5 via-transparent to-transparent pointer-events-none transition-opacity duration-500 group-hover:from-cyan-500/10 opacity-70" />
@@ -259,9 +269,15 @@ const FeaturedProjects = () => (
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false); 
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setMounted(true); 
+    
+    // Detección en tiempo de ejecución del tamaño de pantalla para optimizar dinámicamente las partículas
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
     
     const style = document.createElement('style');
     style.textContent = `
@@ -297,6 +313,7 @@ export default function HomePage() {
     document.head.appendChild(style);
     
     return () => {
+      window.removeEventListener('resize', checkMobile);
       document.head.removeChild(style);
     };
   }, []);
@@ -306,6 +323,9 @@ export default function HomePage() {
     window.dispatchEvent(event);
   };
 
+  // Cómputo inteligente de partículas: 40 para celulares / 180 para computadoras
+  const particleCount = isMobile ? 40 : 180;
+
   return (
     <div className="min-h-screen relative bg-black text-white font-sans overflow-x-hidden selection:bg-cyan-500/30">
       
@@ -314,11 +334,11 @@ export default function HomePage() {
 
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-950/15 via-black to-black pointer-events-none z-0" />
       
-      {/* CAPA DE DESTELLOS Y PARTICULAS FLOTANTES CUÁNTICAS */}
+      {/* CAPA DE DESTELLOS Y PARTICULAS FLOTANTES CUÁNTICAS OPTIMIZADAS */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[20%] left-[50%] -translate-x-1/2 w-[800px] h-[800px] bg-cyan-500/10 blur-[150px] rounded-full" />
 
-        {mounted && [...Array(200)].map((_, idx) => {
+        {mounted && [...Array(particleCount)].map((_, idx) => {
           const isLarge = idx % 10 === 0; 
           return (
             <motion.div
@@ -333,6 +353,7 @@ export default function HomePage() {
                 boxShadow: isLarge 
                   ? '0 0 12px 3px #22d3ee, 0 0 24px 6px rgba(6, 182, 212, 0.6)' 
                   : '0 0 8px 2px #22d3ee',
+                willChange: "transform, opacity" // Evita recalculado completo del árbol DOM
               }}
               animate={{
                 y: [0, Math.random() * -100 - 50],
@@ -412,6 +433,7 @@ export default function HomePage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 1 }}
+            style={{ willChange: "transform, opacity" }}
             className="mt-6 text-neutral-200 text-neon-glow-css text-xl md:text-2xl max-w-2xl mx-auto px-4 font-light tracking-wide"
           >
             "We unify scientific and spiritual knowledge to improve the well-being of the Cosmos."
