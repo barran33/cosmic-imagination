@@ -17,6 +17,7 @@ const AstronautWidget = () => {
       transition={{ duration: 1.2, ease: "easeOut", delay: 0.5 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
+      style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
       className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50 pointer-events-auto cursor-pointer group"
     >
       {/* Contenedor responsivo optimizado para móviles y escritorio */}
@@ -58,6 +59,7 @@ const AstronautWidget = () => {
           <motion.g
             animate={{ y: [0, -3, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            style={{ willChange: "transform" }}
           >
             {/* Mochila Espacial */}
             <rect x="34" y="52" width="12" height="32" rx="4" fill="#0f172a" stroke="#06B6D4" strokeWidth="1.5" />
@@ -87,35 +89,30 @@ const AstronautWidget = () => {
               strokeWidth="7" 
               strokeLinecap="round"
               strokeLinejoin="round"
-              style={{ transformOrigin: "41px 52px" }}
+              style={{ transformOrigin: "41px 52px", willChange: "transform" }}
               animate={isHovered ? { rotate: [0, -6, 4, 0] } : { rotate: 0 }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             />
             {/* Mano Izquierda */}
             <circle cx="27" cy="73" r="4" fill="#0f172a" stroke="#22D3EE" strokeWidth="1" />
 
-            {/* Brazo Derecho Extendido (Corregido: Fluye hacia afuera y adelante como la tarjeta) */}
+            {/* Brazo Derecho Elevado con Saludo Natural Organizado por Grupo (ORIGINAL RESTAURADO) */}
             <motion.g
-              style={{ transformOrigin: "79px 54px" }}
-              animate={isHovered ? { rotate: [0, 5, -3, 5, 0] } : { rotate: 0 }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              style={{ transformOrigin: "79px 52px", willChange: "transform" }}
+              animate={isHovered ? { rotate: [0, -8, 4, -8, 0] } : { rotate: 0 }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
             >
-              {/* Trayectoria fluida desde el hombro derecho hacia el frente/lateral */}
+              {/* Trayecto del brazo original sin desprendimiento estructural */}
               <path 
-                d="M79 54 C92 56 102 62 105 68" 
+                d="M79 52 C94 48 102 34 100 24 C96 18 88 24 86 30" 
                 fill="none" 
                 stroke="#ffffff" 
                 strokeWidth="7" 
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
-              {/* Mano Derecha Abierta orientada dinámicamente */}
-              <path 
-                d="M104 66 C107 64 112 66 110 71 C107 73 103 71 104 66" 
-                fill="#0f172a" 
-                stroke="#22D3EE" 
-                strokeWidth="1" 
-              />
+              {/* Mano Derecha Abierta fija en su posición geométrica de origen */}
+              <path d="M100 20 Q104 14 106 20 Q104 24 98 25" fill="#0f172a" stroke="#22D3EE" strokeWidth="1" />
             </motion.g>
 
             {/* Casco */}
@@ -154,6 +151,7 @@ const AstronautWidget = () => {
               <motion.path 
                 d="M30 12 L37 28 L44 12 Z" 
                 fill="url(#flame-gradient)" 
+                style={{ willChange: "d" }}
                 animate={{ d: ["M30 12 L37 32 L44 12 Z", "M30 12 L37 24 L44 12 Z", "M30 12 L37 32 L44 12 Z"] }}
                 transition={{ duration: 0.2, repeat: Infinity, ease: "linear" }}
               />
@@ -163,6 +161,7 @@ const AstronautWidget = () => {
               <motion.path 
                 d="M76 12 L83 28 L90 12 Z" 
                 fill="url(#flame-gradient)" 
+                style={{ willChange: "d" }}
                 animate={{ d: ["M76 12 L83 26 L90 12 Z", "M76 12 L83 34 L90 12 Z", "M76 12 L83 26 L90 12 Z"] }}
                 transition={{ duration: 0.25, repeat: Infinity, ease: "linear" }}
               />
@@ -187,6 +186,7 @@ const NeonTitle = ({ text }: { text: string }) => (
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 1 }}
+    style={{ willChange: "transform, opacity" }}
     className="text-center font-extrabold text-cyan-300 text-neon-glow-css whitespace-nowrap 
                text-4xl sm:text-5xl md:text-6xl lg:text-7xl select-none" 
   >
@@ -199,6 +199,7 @@ const NeonButton = ({ onClick }: { onClick: () => void }) => (
     <motion.div
       whileHover={{ scale: 1.05, boxShadow: '0 0 12px #00FFFF, 0 0 35px rgba(0, 255, 255, 0.5)' }} 
       whileTap={{ scale: 0.95 }}
+      style={{ willChange: "transform, box-shadow" }}
       className="mt-8 px-8 py-3 bg-neutral-950/60 text-cyan-300 font-bold uppercase border border-cyan-400/80 rounded-full tracking-widest cursor-pointer transition-all duration-300 shadow-neon-light text-neon-glow-css backdrop-blur-sm"
     >
       <div className="flex items-center justify-center gap-2">
@@ -222,6 +223,7 @@ const FeaturedProjects = () => (
         initial={{ opacity: 0, y: 10 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.5 }}
+        style={{ willChange: "transform, opacity" }}
         className="text-center text-lg uppercase tracking-widest text-cyan-400 text-neon-glow-css mb-2"
       >
         Galantic Portfolio
@@ -231,6 +233,7 @@ const FeaturedProjects = () => (
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
         viewport={{ once: true, amount: 0.5 }}
+        style={{ willChange: "transform, opacity" }}
         className="text-4xl md:text-5xl font-extralight text-cyan-100 text-center mb-16 uppercase tracking-tight"
       >
         High-Frequency <span className="text-cyan-400 font-normal drop-shadow-[0_0_10px_rgba(6,182,212,0.5)]">Projects</span>
@@ -250,6 +253,7 @@ const FeaturedProjects = () => (
                   borderColor: 'rgba(18, 210, 239, 0.67)',
                   boxShadow: '0 0 30px rgba(6, 182, 212, 0.15), inset 0 0 15px rgba(6, 182, 212, 0.05)' 
                 }}
+                style={{ willChange: "transform, opacity, box-shadow" }}
                 className="relative overflow-hidden bg-neutral-950/20 backdrop-blur-xl border border-neutral-900/80 p-8 rounded-[2rem] transition-all duration-500 cursor-pointer flex flex-col items-start h-full shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
               >
                 <div className="absolute top-0 left-0 w-48 h-48 bg-gradient-to-br from-cyan-500/5 via-transparent to-transparent pointer-events-none transition-opacity duration-500 group-hover:from-cyan-500/10 opacity-70" />
@@ -341,12 +345,13 @@ export default function HomePage() {
 
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-950/15 via-black to-black pointer-events-none z-0" />
       
-      {/* CAPA DE DESTELLOS Y PARTICULAS FLOTANTES CUÁNTICAS */}
+      {/* CAPA DE DESTELLOS Y PARTICULAS FLOTANTES CUÁNTICAS (OPTIMIZADO PARA MÓVILES) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[20%] left-[50%] -translate-x-1/2 w-[800px] h-[800px] bg-cyan-500/10 blur-[150px] rounded-full" />
 
-        {mounted && [...Array(200)].map((_, idx) => {
-          const isLarge = idx % 10 === 0; 
+        {/* REDUCIDO DE 200 a 45 PARTICULAS PARA RENDIMIENTO FLUIDO EN MÓVILES */}
+        {mounted && [...Array(45)].map((_, idx) => {
+          const isLarge = idx % 8 === 0; 
           return (
             <motion.div
               key={`space-particle-${idx}`}
@@ -360,6 +365,7 @@ export default function HomePage() {
                 boxShadow: isLarge 
                   ? '0 0 12px 3px #22d3ee, 0 0 24px 6px rgba(6, 182, 212, 0.6)' 
                   : '0 0 8px 2px #22d3ee',
+                willChange: "transform, opacity", // ACELERACIÓN POR HARDWARE
               }}
               animate={{
                 y: [0, Math.random() * -100 - 50],
@@ -439,6 +445,7 @@ export default function HomePage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 1 }}
+            style={{ willChange: "transform, opacity" }}
             className="mt-6 text-neutral-200 text-neon-glow-css text-xl md:text-2xl max-w-2xl mx-auto px-4 font-light tracking-wide"
           >
             "We unify scientific and spiritual knowledge to improve the well-being of the Cosmos."
