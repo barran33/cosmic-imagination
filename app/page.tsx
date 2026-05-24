@@ -1,10 +1,160 @@
 "use client";
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Code, Activity, Atom } from 'lucide-react'; 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link'; 
 
-// Componente para el título con efecto Neón
+// ========================================================
+// WIDGET INTERACTIVO DEL ASTRONAUTA (NAVEGANTE DEL VACÍO)
+// ========================================================
+const AstronautWidget = () => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8, y: 50 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 1.2, ease: "easeOut", delay: 0.5 }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      
+      className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50 pointer-events-auto cursor-pointer group"
+    >
+      {/* CORRECCIÓN DE ESCALA: Contenedor compacto en móviles (w-20 h-28) y completo en escritorio (md:w-32 md:h-44) */}
+      <div className="relative w-20 h-28 md:w-32 md:h-44 flex flex-col items-center justify-center animate-float-supreme">
+        
+        {/* Aura de energía cuántica trasera (Se expande en Hover) */}
+        <div className="absolute inset-0 bg-cyan-500/0 rounded-full blur-2xl group-hover:bg-cyan-500/10 transition-all duration-700" />
+        
+        {/* Resplandor Cian de la Hoverboard trasera */}
+        <div className="absolute bottom-4 md:bottom-6 w-10 h-10 md:w-16 md:h-16 bg-cyan-500/20 rounded-full blur-xl group-hover:bg-cyan-400/40 transition-all duration-700" />
+        
+        {/* SVG del Astronauta Cuántico */}
+        <svg viewBox="0 0 100 120" className="w-full h-full drop-shadow-[0_0_8px_rgba(6,182,212,0.4)] group-hover:drop-shadow-[0_0_25px_rgba(34,211,238,0.8)] transition-all duration-500">
+          <defs>
+            <linearGradient id="visor-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#082f49" />
+              <stop offset="50%" stopColor="#000000" />
+              <stop offset="100%" stopColor="#0891b2" />
+            </linearGradient>
+            <linearGradient id="flame-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#22D3EE" stopOpacity="0.9" />
+              <stop offset="100%" stopColor="#0891B2" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+
+          {/* Cuerpo / Traje Espacial */}
+          <g fill="#FFFFFF" stroke="#06B6D4" strokeWidth="1">
+            {/* Casco */}
+            <circle cx="50" cy="40" r="18" fill="#0d0d0d" strokeWidth="1.5" />
+            
+            {/* Visor Neón (Portal de Reflejos) */}
+            <ellipse cx="50" cy="38" rx="13" ry="10" fill="url(#visor-gradient)" stroke="#22D3EE" strokeWidth="1.5" style={{ filter: 'url(#neon-glow)' }} />
+            
+            {/* Detalle de Brillo en el Visor (Animado en Hover) */}
+            <motion.path 
+              d="M42 33 Q46 30 52 31" 
+              fill="none" 
+              stroke="#FFFFFF" 
+              strokeWidth="1.5" 
+              animate={{ opacity: isHovered ? [0.7, 1, 0.7] : 0.7, pathLength: isHovered ? [0.8, 1, 0.8] : 1 }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+            
+            {/* Mochila de Soporte Vital */}
+            <rect x="26" y="50" width="12" height="28" rx="4" fill="#141414" stroke="#06B6D4" />
+            <rect x="62" y="50" width="12" height="28" rx="4" fill="#141414" stroke="#06B6D4" />
+            
+            {/* Tronco y Brazos (Animación de respiración habitual) */}
+            <motion.path 
+              d="M36 55 Q50 52 64 55 L60 80 Q50 82 40 80 Z" 
+              fill="#ffffff" 
+              animate={{ d: ["M36 55 Q50 52 64 55 L60 80 Q50 82 40 80 Z", "M36 54 Q50 51 64 54 L61 80 Q50 83 39 80 Z", "M36 55 Q50 52 64 55 L60 80 Q50 82 40 80 Z"] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            />
+            
+            {/* MEJORA: Brazo Izquierdo con Saludo Mágico Completo Elevado */}
+            <motion.path 
+              d="M36 56 Q24 60 26 70" 
+              fill="none" 
+              stroke="#ffffff" 
+              strokeWidth="7" 
+              strokeLinecap="round"
+              style={{ transformOrigin: "36px 56px" }}
+              animate={isHovered ? { 
+                d: [
+                  "M36 56 Q20 40 18 26", 
+                  "M36 56 Q25 38 24 24", 
+                  "M36 56 Q15 42 14 28", 
+                  "M36 56 Q20 40 18 26"  
+                ],
+                rotate: [0, -4, 6, 0] 
+              } : { 
+                d: "M36 56 Q24 60 26 70",
+                rotate: 0 
+              }}
+              transition={isHovered ? { 
+                duration: 1.4, 
+                repeat: Infinity, 
+                ease: "easeInOut" 
+              } : { duration: 0.4 }}
+            />
+            
+            {/* Brazo Derecho (Mantiene equilibrio dinámico en hover) */}
+            <motion.path 
+              d="M64 56 Q74 64 70 74" 
+              fill="none" 
+              stroke="#ffffff" 
+              strokeWidth="7" 
+              strokeLinecap="round"
+              style={{ transformOrigin: "64px 56px" }}
+              animate={isHovered ? { rotate: [0, 5, -3, 0] } : { rotate: 0 }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            />
+            
+            {/* Piernas */}
+            <path d="M42 80 L38 98" fill="none" stroke="#ffffff" strokeWidth="8" strokeLinecap="round" />
+            <path d="M58 80 L62 98" fill="none" stroke="#ffffff" strokeWidth="8" strokeLinecap="round" />
+          </g>
+
+          {/* Botas de Estabilización */}
+          <rect x="33" y="96" width="10" height="5" rx="2" fill="#080808" stroke="#22D3EE" strokeWidth="1" />
+          <rect x="57" y="96" width="10" height="5" rx="2" fill="#080808" stroke="#22D3EE" strokeWidth="1" />
+
+          {/* HOVERBOARD (Plataforma de Frecuencias) */}
+          <g transform="translate(0, 102)">
+            <ellipse cx="50" cy="3" rx="32" ry="4" fill="#0a0a0a" stroke="#22D3EE" strokeWidth="2" style={{ filter: 'url(#neon-glow)' }} />
+            <path d="M18 3 L14 -1 M82 3 L86 -1" stroke="#FFFFFF" strokeWidth="1.5" opacity="0.8" />
+            
+            {/* Propulsores de Éter (Tamaño reducido y elegante) */}
+            <motion.path 
+              d="M38 7 L50 16 L62 7" 
+              fill="url(#flame-gradient)" 
+              stroke="#22D3EE" 
+              strokeWidth="1"
+              opacity="0.8"
+              style={{ filter: 'url(#neon-glow)' }}
+              animate={isHovered 
+                ? { d: ["M38 7 L50 18 L62 7", "M38 7 L50 14 L62 7", "M38 7 L50 18 L62 7"], opacity: [0.7, 1, 0.7] }
+                : { d: ["M38 7 L50 16 L62 7", "M38 7 L50 12 L62 7", "M38 7 L50 16 L62 7"], opacity: [0.5, 0.8, 0.5] }
+              }
+              transition={{ duration: 0.3, repeat: Infinity, ease: "linear" }}
+            />
+          </g>
+        </svg>
+
+        {/* CORRECCIÓN DE DESBORDAMIENTO: Tag de Telemetría oculto en móviles (`hidden md:inline-block`) */}
+        <span className="hidden md:inline-block absolute -bottom-4 font-mono text-[9px] tracking-[0.2em] text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 uppercase whitespace-nowrap bg-black/80 px-3 py-1 border border-cyan-500/30 rounded backdrop-blur-md">
+          SYSTEM_RIDER // ACTIVE
+        </span>
+      </div>
+    </motion.div>
+  );
+};
+
+// ========================================================
+// COMPONENTES DE ESTRUCTURA HOME
+// ========================================================
 const NeonTitle = ({ text }: { text: string }) => (
   <motion.h1
     initial={{ opacity: 0, y: 20 }}
@@ -17,7 +167,6 @@ const NeonTitle = ({ text }: { text: string }) => (
   </motion.h1>
 );
 
-// Componente para el botón de la Auditoría
 const NeonButton = ({ onClick }: { onClick: () => void }) => (
   <div className="block max-w-max mx-auto" onClick={onClick}> 
     <motion.div
@@ -33,29 +182,10 @@ const NeonButton = ({ onClick }: { onClick: () => void }) => (
   </div>
 );
 
-// Datos de los proyectos conceptuales
 const projectData = [
-  { 
-    title: "Cosmic Architect", 
-    tagline: "Space to Think",
-    href: "/geometry", 
-    icon: Activity,
-    tech: "React Native, Python ML" 
-  },
-  { 
-    title: "Cosmic Symphony", 
-    tagline: "Visual Sound Analysis",
-    href: "/resonance", 
-    icon: Atom,
-    tech: "Next.js, FastAPI, Big Data" 
-  },
-  { 
-    title: "Divine Flow", 
-    tagline: "Quantum Projects System",
-    href: "/DivineFlow",
-    icon: Code,
-    tech: "React, WebSockets, QA" 
-  },
+  { title: "Cosmic Architect", tagline: "Space to Think", href: "/geometry", icon: Activity, tech: "React Native, Python ML" },
+  { title: "Cosmic Symphony", tagline: "Visual Sound Analysis", href: "/resonance", icon: Atom, tech: "Next.js, FastAPI, Big Data" },
+  { title: "Divine Flow", tagline: "Quantum Projects System", href: "/DivineFlow", icon: Code, tech: "React, WebSockets, QA" },
 ];
 
 const FeaturedProjects = () => (
@@ -128,7 +258,6 @@ const FeaturedProjects = () => (
 );
 
 export default function HomePage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false); 
 
   useEffect(() => {
@@ -143,7 +272,6 @@ export default function HomePage() {
         box-shadow: 0 0 5px rgba(0, 255, 255, 0.6), 0 0 20px rgba(0, 255, 255, 0.3);
       }
       
-      /* OPTIMIZACIÓN CÓSMICA PARA PORTAL EN MÓVILES (GPU ENABLED) */
       @keyframes cosmic-vortex-supreme {
         0% { transform: translate3d(0,0,0) rotate(0deg); }
         100% { transform: translate3d(0,0,0) rotate(360deg); }
@@ -167,13 +295,13 @@ export default function HomePage() {
       }
     `;
     document.head.appendChild(style);
+    
     return () => {
       document.head.removeChild(style);
     };
   }, []);
 
   const handleOpenPortal = () => {
-    setIsModalOpen(true);
     const event = new CustomEvent('open-cosmic-portal');
     window.dispatchEvent(event);
   };
@@ -181,14 +309,16 @@ export default function HomePage() {
   return (
     <div className="min-h-screen relative bg-black text-white font-sans overflow-x-hidden selection:bg-cyan-500/30">
       
+      {/* RENDERIZADO DEL ASTRONAUTA INTERACTIVO NATIVO */}
+      <AstronautWidget />
+
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-950/15 via-black to-black pointer-events-none z-0" />
       
       {/* CAPA DE DESTELLOS Y PARTICULAS FLOTANTES CUÁNTICAS */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-        {/* Fondo de brillo ambiental */}
         <div className="absolute top-[20%] left-[50%] -translate-x-1/2 w-[800px] h-[800px] bg-cyan-500/10 blur-[150px] rounded-full" />
 
-        {mounted && [...Array(270)].map((_, idx) => {
+        {mounted && [...Array(200)].map((_, idx) => {
           const isLarge = idx % 10 === 0; 
           return (
             <motion.div
@@ -228,16 +358,9 @@ export default function HomePage() {
           <div className="relative w-64 h-64 mb-10 flex items-center justify-center animate-float-supreme">
             <div className="absolute w-44 h-44 bg-cyan-500/20 rounded-full blur-[80px] pointer-events-none" />
             
-            {/* ========================================================
-                PORTAL CÓSMICO ACTUALIZADO - GEOMETRÍA SAGRADA FLUIDA 
-                ======================================================== */}
-            <svg 
-              viewBox="0 0 200 200" 
-              className="w-70 h-70"
-            >
+            <svg viewBox="0 0 200 200" className="w-70 h-70">
               <defs>
-                {/* Filtro de neón intenso */}
-                <filter id="neon-glow" x="-50%" y="-50%" width="200%" height="200%">
+                <filter id="neon-glow-portal" x="-50%" y="-50%" width="200%" height="200%">
                   <feGaussianBlur stdDeviation="3" result="blur" />
                   <feMerge>
                     <feMergeNode in="blur" />
@@ -246,7 +369,6 @@ export default function HomePage() {
                 </filter>
               </defs>
 
-              {/* CAPA 1: Estructura Lemniscata (Líneas gruesas y continuas) */}
               <g className="animate-vortex-supreme" style={{ transformOrigin: 'center' }}>
                 {[...Array(6)].map((_, i) => (
                   <path
@@ -257,50 +379,31 @@ export default function HomePage() {
                     strokeWidth="1.5"
                     opacity="0.6"
                     transform={`rotate(${i * 60} 100 100)`}
-                    style={{ filter: 'url(#neon-glow)' }}
+                    style={{ filter: 'url(#neon-glow-portal)' }}
                   />
                 ))}
               </g>
 
-              {/* CAPA 2: Anillos de Frecuencia (Sólidos y brillantes) */}
               <g className="animate-vortex-supreme" style={{ animationDuration: '40s', transformOrigin: 'center' }}>
-                <circle cx="100" cy="100" r="70" fill="none" stroke="#06B6D4" strokeWidth="2" opacity="0.8" style={{ filter: 'url(#neon-glow)' }} />
+                <circle cx="100" cy="100" r="70" fill="none" stroke="#06B6D4" strokeWidth="2" opacity="0.8" style={{ filter: 'url(#neon-glow-portal)' }} />
                 <circle cx="100" cy="100" r="50" fill="none" stroke="#FFFFFF" strokeWidth="1.5" opacity="0.6" />
               </g>
 
-              {/* CAPA 3: Núcleo (Energía pura y gruesa) */}
               <g className="animate-vortex-supreme" style={{ animationDuration: '15s', animationDirection: 'reverse', transformOrigin: 'center' }}>
-                <path
-                  d="M100 30 A 70 70 0 1 0 100 170 A 70 70 0 1 0 100 30"
-                  fill="none"
-                  stroke="#22D3EE"
-                  strokeWidth="3"
-                  style={{ filter: 'url(#neon-glow)' }}
-                />
+                <path d="M100 30 A 70 70 0 1 0 100 170 A 70 70 0 1 0 100 30" fill="none" stroke="#22D3EE" strokeWidth="3" style={{ filter: 'url(#neon-glow-portal)' }} />
                 {[0, 120, 240].map((angle) => (
-                  <circle 
-                    key={angle} 
-                    cx={100 + 70 * Math.cos(angle * Math.PI / 180)} 
-                    cy={100 + 70 * Math.sin(angle * Math.PI / 180)} 
-                    r="6" 
-                    fill="#FFFFFF" 
-                    style={{ filter: 'url(#neon-glow)' }}
-                  />
+                  <circle key={angle} cx={100 + 70 * Math.cos(angle * Math.PI / 180)} cy={100 + 70 * Math.sin(angle * Math.PI / 180)} r="6" fill="#FFFFFF" style={{ filter: 'url(#neon-glow-portal)' }} />
                 ))}
               </g>
 
-              {/* CENTRO: Singularidad con pulso neón */}
               <circle cx="100" cy="100" r="15" fill="#000000" stroke="#22D3EE" strokeWidth="1" />
-              <circle cx="100" cy="100" r="15" fill="none" stroke="#22D3EE" strokeWidth="3" opacity="0.4" style={{ filter: 'url(#neon-glow)' }}>
+              <circle cx="100" cy="100" r="15" fill="none" stroke="#22D3EE" strokeWidth="3" opacity="0.4" style={{ filter: 'url(#neon-glow-portal)' }}>
                 <animate attributeName="r" values="15;22;15" dur="3s" repeatCount="indefinite" />
               </circle>
-              
-              <circle cx="100" cy="100" r="8" fill="#FFFFFF" style={{ filter: 'url(#neon-glow)' }}>
+              <circle cx="100" cy="100" r="8" fill="#FFFFFF" style={{ filter: 'url(#neon-glow-portal)' }}>
                 <animate attributeName="r" values="8;12;8" dur="1.5s" repeatCount="indefinite" />
               </circle>
             </svg>
-            {/* ======================================================== */}
-            
           </div>
 
           <NeonTitle text="Co§mic Imagination!" />
@@ -332,7 +435,7 @@ export default function HomePage() {
               </h3>
             </div>
             
-            <h2 className="text-3xl md:text-4xl text-neon-glow-css  font-extralight tracking-wider text-white uppercase">
+            <h2 className="text-3xl md:text-4xl text-neon-glow-css font-extralight tracking-wider text-white uppercase">
               Explore our <span className="text-cyan-400 font-normal drop-shadow-[0_0_12px_rgba(6,182,212,0.6)]">galaxy of projects</span>
             </h2>
             
@@ -341,29 +444,29 @@ export default function HomePage() {
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8 text-left">
-              <div className="p-8 rounded-[2rem] bg-neutral-950/20 border border-neutral-900/80 backdrop-blur-xl shadow-[0_8px_32_rgba(0,0,0,0.5)]">
-                <h4 className="text-sm font-mono text-neon-glow-css  text-cyan-400 tracking-widest uppercase mb-3 drop-shadow-[0_0_4px_rgba(6,182,212,0.3)]">
+              <div className="p-8 rounded-[2rem] bg-neutral-950/20 border border-neutral-900/80 backdrop-blur-xl shadow-[0_8px_32_rgba(0,0,0,0.5)] transition-colors hover:border-cyan-500/30">
+                <h4 className="text-sm font-mono text-neon-glow-css text-cyan-400 tracking-widest uppercase mb-3 drop-shadow-[0_0_4px_rgba(6,182,212,0.3)]">
                     📜 Cosmic Architect
                 </h4>
-                <p className="text-sm text-white   leading-relaxed tracking-wide font-light">
+                <p className="text-sm text-white leading-relaxed tracking-wide font-light">
                     The pure transmutation of the word. Through this quantum engine, you can **discover the hidden geometric pattern behind words**, revealing the mathematical signature and metaphysical element that governs your thoughts.
                 </p>
               </div>
 
-              <div className="p-8 rounded-[2rem] bg-neutral-950/20 border border-neutral-900/80 backdrop-blur-xl shadow-[0_8px_32_rgba(0,0,0,0.5)]">
+              <div className="p-8 rounded-[2rem] bg-neutral-950/20 border border-neutral-900/80 backdrop-blur-xl shadow-[0_8px_32_rgba(0,0,0,0.5)] transition-colors hover:border-cyan-500/30">
                 <h4 className="text-sm font-mono text-cyan-400 text-neon-glow-css tracking-widest uppercase mb-3 drop-shadow-[0_0_4px_rgba(6,182,212,0.3)]">
                     ⚛️ Cosmic Symphony
                 </h4>
-                <p className="text-sm text-white  leading-relaxed tracking-wide font-light">
+                <p className="text-sm text-white leading-relaxed tracking-wide font-light">
                     The ancient art of **cymatics** made code. Here you interact directly with elemental vibration, injecting acoustic frequencies to **give visual form to sound** in real time, tuning your brainwaves to states of focus, relaxation, or orbital sleep.
                 </p>
               </div>
 
-              <div className="p-8 rounded-[2rem] bg-neutral-950/20 border border-neutral-900/80 backdrop-blur-xl shadow-[0_8px_32_rgba(0,0,0,0.5)]">
+              <div className="p-8 rounded-[2rem] bg-neutral-950/20 border border-neutral-900/80 backdrop-blur-xl shadow-[0_8px_32_rgba(0,0,0,0.5)] transition-colors hover:border-cyan-500/30">
                 <h4 className="text-sm text-neon-glow-css font-mono text-cyan-400 tracking-widest uppercase mb-3 drop-shadow-[0_0_4px_rgba(6,182,212,0.3)]">
                     ⭐ Divine Flow
                 </h4>
-                <p className="text-sm text-white   leading-relaxed tracking-wide font-light">
+                <p className="text-sm text-white leading-relaxed tracking-wide font-light">
                     Visualizing the cosmic order. Using the sacred structure of the star, this system allows you to map and **observe the different types of divine and universal flows**, translating quantum entanglement and the interconnectedness of everything into harmonic visual currents.
                 </p>
               </div>
