@@ -105,7 +105,7 @@ const AstronautWidget = () => {
                 d: [
                   "M36 56 Q20 40 18 26", 
                   "M36 56 Q25 38 24 24", 
-                  "M36 56 Q15 42 14 28", 
+                  "M15 42 14 28", 
                   "M36 56 Q20 40 18 26"  
                 ],
                 rotate: [0, -4, 6, 0] 
@@ -374,9 +374,9 @@ export default function HomePage() {
             <div className="absolute w-44 h-44 bg-cyan-500/10 rounded-full blur-[60px] pointer-events-none" />
             
             <svg viewBox="0 0 200 200" className="w-full h-full transform-gpu">
-              {/* Grupo del vórtice sincronizado en CSS Nativo (Evita retrasos por JS en mobile) */}
+              {/* Grupo del vórtice sincronizado en CSS Nativo con los 6 bucles geométricos sagrados intactos */}
               <g className="animate-vortex-supreme" style={{ transformOrigin: 'center' }}>
-                {[...Array(isMobile ? 3 : 6)].map((_, i) => (
+                {[...Array(6)].map((_, i) => (
                   <path
                     key={i}
                     d="M100 100 C 100 20, 20 100, 100 180 C 180 100, 100 20, 100 100"
@@ -384,7 +384,7 @@ export default function HomePage() {
                     stroke="#22D3EE"
                     strokeWidth="1.5"
                     opacity="0.5"
-                    transform={`rotate(${i * (isMobile ? 120 : 60)} 100 100)`}
+                    transform={`rotate(${i * 60} 100 100)`}
                   />
                 ))}
               </g>
