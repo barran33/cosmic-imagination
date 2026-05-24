@@ -1,5 +1,5 @@
 "use client";
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Sparkles, Code, Activity, Atom } from 'lucide-react'; 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link'; 
@@ -20,19 +20,17 @@ const AstronautWidget = () => {
       style={{ willChange: "transform, opacity", transform: "translateZ(0)" }}
       className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50 pointer-events-auto cursor-pointer group"
     >
-      {/* Contenedor compacto optimizado con aceleración por hardware */}
       <div 
         style={{ willChange: "transform", transform: "translateZ(0)" }}
         className="relative w-20 h-28 md:w-32 md:h-44 flex flex-col items-center justify-center animate-float-supreme"
       >
-        
-        {/* Aura de energía cuántica trasera (Se expande en Hover) */}
+        {/* Aura de energía cuántica trasera */}
         <div className="absolute inset-0 bg-cyan-500/0 rounded-full blur-2xl group-hover:bg-cyan-500/10 transition-all duration-700" />
         
         {/* Resplandor Cian de la Hoverboard trasera */}
         <div className="absolute bottom-4 md:bottom-6 w-10 h-10 md:w-16 md:h-16 bg-cyan-500/20 rounded-full blur-xl group-hover:bg-cyan-400/40 transition-all duration-700" />
         
-        {/* SVG del Astronauta Cuántico */}
+        {/* SVG del Astronauta Cuántico con sombras optimizadas por CSS */}
         <svg viewBox="0 0 100 120" className="w-full h-full drop-shadow-[0_0_8px_rgba(6,182,212,0.4)] group-hover:drop-shadow-[0_0_25px_rgba(34,211,238,0.8)] transition-all duration-500">
           <defs>
             <linearGradient id="visor-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -48,13 +46,11 @@ const AstronautWidget = () => {
 
           {/* Cuerpo / Traje Espacial */}
           <g fill="#FFFFFF" stroke="#06B6D4" strokeWidth="1">
-            {/* Casco */}
             <circle cx="50" cy="40" r="18" fill="#0d0d0d" strokeWidth="1.5" />
             
-            {/* Visor Neón (Portal de Reflejos) */}
-            <ellipse cx="50" cy="38" rx="13" ry="10" fill="url(#visor-gradient)" stroke="#22D3EE" strokeWidth="1.5" style={{ filter: 'url(#neon-glow)' }} />
+            {/* Visor Neón - Optimización de filtro nativo usando clases CSS en vez de SVG de desenfoque pesado */}
+            <ellipse cx="50" cy="38" rx="13" ry="10" fill="url(#visor-gradient)" stroke="#22D3EE" strokeWidth="1.5" className="md:[filter:url(#neon-glow)]" />
             
-            {/* Detalle de Brillo en el Visor (Animado en Hover) */}
             <motion.path 
               d="M42 33 Q46 30 52 31" 
               fill="none" 
@@ -65,11 +61,9 @@ const AstronautWidget = () => {
               transition={{ duration: 1.5, repeat: Infinity }}
             />
             
-            {/* Mochila de Soporte Vital */}
             <rect x="26" y="50" width="12" height="28" rx="4" fill="#141414" stroke="#06B6D4" />
             <rect x="62" y="50" width="12" height="28" rx="4" fill="#141414" stroke="#06B6D4" />
             
-            {/* Tronco y Brazos (Animación de respiración habitual) */}
             <motion.path 
               d="M36 55 Q50 52 64 55 L60 80 Q50 82 40 80 Z" 
               fill="#ffffff" 
@@ -78,7 +72,6 @@ const AstronautWidget = () => {
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
             />
             
-            {/* MEJORA: Brazo Izquierdo con Saludo Mágico Completo Elevado */}
             <motion.path 
               d="M36 56 Q24 60 26 70" 
               fill="none" 
@@ -98,14 +91,9 @@ const AstronautWidget = () => {
                 d: "M36 56 Q24 60 26 70",
                 rotate: 0 
               }}
-              transition={isHovered ? { 
-                duration: 1.4, 
-                repeat: Infinity, 
-                ease: "easeInOut" 
-              } : { duration: 0.4 }}
+              transition={isHovered ? { duration: 1.4, repeat: Infinity, ease: "easeInOut" } : { duration: 0.4 }}
             />
             
-            {/* Brazo Derecho (Mantiene equilibrio dinámico en hover) */}
             <motion.path 
               d="M64 56 Q74 64 70 74" 
               fill="none" 
@@ -117,28 +105,26 @@ const AstronautWidget = () => {
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             />
             
-            {/* Piernas */}
             <path d="M42 80 L38 98" fill="none" stroke="#ffffff" strokeWidth="8" strokeLinecap="round" />
             <path d="M58 80 L62 98" fill="none" stroke="#ffffff" strokeWidth="8" strokeLinecap="round" />
           </g>
 
-          {/* Botas de Estabilización */}
           <rect x="33" y="96" width="10" height="5" rx="2" fill="#080808" stroke="#22D3EE" strokeWidth="1" />
           <rect x="57" y="96" width="10" height="5" rx="2" fill="#080808" stroke="#22D3EE" strokeWidth="1" />
 
-          {/* HOVERBOARD (Plataforma de Frecuencias) */}
+          {/* HOVERBOARD */}
           <g transform="translate(0, 102)">
-            <ellipse cx="50" cy="3" rx="32" ry="4" fill="#0a0a0a" stroke="#22D3EE" strokeWidth="2" style={{ filter: 'url(#neon-glow)' }} />
+            <ellipse cx="50" cy="3" rx="32" ry="4" fill="#0a0a0a" stroke="#22D3EE" strokeWidth="2" className="md:[filter:url(#neon-glow)]" />
             <path d="M18 3 L14 -1 M82 3 L86 -1" stroke="#FFFFFF" strokeWidth="1.5" opacity="0.8" />
             
-            {/* Propulsores de Éter (Tamaño reducido y elegante) */}
             <motion.path 
               d="M38 7 L50 16 L62 7" 
               fill="url(#flame-gradient)" 
               stroke="#22D3EE" 
               strokeWidth="1"
               opacity="0.8"
-              style={{ filter: 'url(#neon-glow)', willChange: "d, opacity" }}
+              className="md:[filter:url(#neon-glow)]"
+              style={{ willChange: "d, opacity" }}
               animate={isHovered 
                 ? { d: ["M38 7 L50 18 L62 7", "M38 7 L50 14 L62 7", "M38 7 L50 18 L62 7"], opacity: [0.7, 1, 0.7] }
                 : { d: ["M38 7 L50 16 L62 7", "M38 7 L50 12 L62 7", "M38 7 L50 16 L62 7"], opacity: [0.5, 0.8, 0.5] }
@@ -148,7 +134,6 @@ const AstronautWidget = () => {
           </g>
         </svg>
 
-        {/* Tag de Telemetría oculto en móviles */}
         <span className="hidden md:inline-block absolute -bottom-4 font-mono text-[9px] tracking-[0.2em] text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 uppercase whitespace-nowrap bg-black/80 px-3 py-1 border border-cyan-500/30 rounded backdrop-blur-md">
           SYSTEM_RIDER // ACTIVE
         </span>
@@ -166,8 +151,7 @@ const NeonTitle = ({ text }: { text: string }) => (
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 1 }}
     style={{ willChange: "transform, opacity" }}
-    className="text-center font-extrabold text-cyan-300 text-neon-glow-css whitespace-nowrap 
-               text-4xl sm:text-5xl md:text-6xl lg:text-7xl select-none" 
+    className="text-center font-extrabold text-cyan-300 text-neon-glow-css whitespace-nowrap text-4xl sm:text-5xl md:text-6xl lg:text-7xl select-none" 
   >
     {text}
   </motion.h1>
@@ -274,7 +258,6 @@ export default function HomePage() {
   useEffect(() => {
     setMounted(true); 
     
-    // Detección en tiempo de ejecución del tamaño de pantalla para optimizar dinámicamente las partículas
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
@@ -323,18 +306,17 @@ export default function HomePage() {
     window.dispatchEvent(event);
   };
 
-  // Cómputo inteligente de partículas: 40 para celulares / 180 para computadoras
-  const particleCount = isMobile ? 40 : 180;
+  // Reducción drástica del pool de partículas flotantes solo en móviles
+  const particleCount = isMobile ? 25 : 180;
 
   return (
     <div className="min-h-screen relative bg-black text-white font-sans overflow-x-hidden selection:bg-cyan-500/30">
       
-      {/* RENDERIZADO DEL ASTRONAUTA INTERACTIVO NATIVO */}
       <AstronautWidget />
 
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-950/15 via-black to-black pointer-events-none z-0" />
       
-      {/* CAPA DE DESTELLOS Y PARTICULAS FLOTANTES CUÁNTICAS OPTIMIZADAS */}
+      {/* CAPA DE PARTICULAS OPTIMIZADA */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[20%] left-[50%] -translate-x-1/2 w-[800px] h-[800px] bg-cyan-500/10 blur-[150px] rounded-full" />
 
@@ -353,7 +335,7 @@ export default function HomePage() {
                 boxShadow: isLarge 
                   ? '0 0 12px 3px #22d3ee, 0 0 24px 6px rgba(6, 182, 212, 0.6)' 
                   : '0 0 8px 2px #22d3ee',
-                willChange: "transform, opacity" // Evita recalculado completo del árbol DOM
+                willChange: "transform, opacity"
               }}
               animate={{
                 y: [0, Math.random() * -100 - 50],
@@ -376,11 +358,16 @@ export default function HomePage() {
       <section className="relative min-h-screen flex flex-col items-center justify-center text-center p-4 overflow-hidden z-10">
         <div className="relative flex flex-col items-center max-w-4xl mx-auto pt-8">
           
-          <div className="relative w-64 h-64 mb-10 flex items-center justify-center animate-float-supreme">
+          {/* PORTAL GEOMÉTRICO CENTRAL - Capas optimizadas para GPU */}
+          <div 
+            style={{ transform: "translateZ(0)", willChange: "transform" }}
+            className="relative w-64 h-64 mb-10 flex items-center justify-center animate-float-supreme"
+          >
             <div className="absolute w-44 h-44 bg-cyan-500/20 rounded-full blur-[80px] pointer-events-none" />
             
             <svg viewBox="0 0 200 200" className="w-70 h-70">
               <defs>
+                {/* El filtro solo se renderiza si el dispositivo tiene potencia para procesarlo (Escritorio) */}
                 <filter id="neon-glow-portal" x="-50%" y="-50%" width="200%" height="200%">
                   <feGaussianBlur stdDeviation="3" result="blur" />
                   <feMerge>
@@ -390,7 +377,7 @@ export default function HomePage() {
                 </filter>
               </defs>
 
-              <g className="animate-vortex-supreme" style={{ transformOrigin: 'center' }}>
+              <g className="animate-vortex-supreme" style={{ transformOrigin: 'center', willChange: 'transform' }}>
                 {[...Array(6)].map((_, i) => (
                   <path
                     key={i}
@@ -400,28 +387,28 @@ export default function HomePage() {
                     strokeWidth="1.5"
                     opacity="0.6"
                     transform={`rotate(${i * 60} 100 100)`}
-                    style={{ filter: 'url(#neon-glow-portal)' }}
+                    className="md:[filter:url(#neon-glow-portal)]"
                   />
                 ))}
               </g>
 
-              <g className="animate-vortex-supreme" style={{ animationDuration: '40s', transformOrigin: 'center' }}>
-                <circle cx="100" cy="100" r="70" fill="none" stroke="#06B6D4" strokeWidth="2" opacity="0.8" style={{ filter: 'url(#neon-glow-portal)' }} />
+              <g className="animate-vortex-supreme" style={{ animationDuration: '40s', transformOrigin: 'center', willChange: 'transform' }}>
+                <circle cx="100" cy="100" r="70" fill="none" stroke="#06B6D4" strokeWidth="2" opacity="0.8" className="md:[filter:url(#neon-glow-portal)]" />
                 <circle cx="100" cy="100" r="50" fill="none" stroke="#FFFFFF" strokeWidth="1.5" opacity="0.6" />
               </g>
 
-              <g className="animate-vortex-supreme" style={{ animationDuration: '15s', animationDirection: 'reverse', transformOrigin: 'center' }}>
-                <path d="M100 30 A 70 70 0 1 0 100 170 A 70 70 0 1 0 100 30" fill="none" stroke="#22D3EE" strokeWidth="3" style={{ filter: 'url(#neon-glow-portal)' }} />
+              <g className="animate-vortex-supreme" style={{ animationDuration: '15s', animationDirection: 'reverse', transformOrigin: 'center', willChange: 'transform' }}>
+                <path d="M100 30 A 70 70 0 1 0 100 170 A 70 70 0 1 0 100 30" fill="none" stroke="#22D3EE" strokeWidth="3" className="md:[filter:url(#neon-glow-portal)]" />
                 {[0, 120, 240].map((angle) => (
-                  <circle key={angle} cx={100 + 70 * Math.cos(angle * Math.PI / 180)} cy={100 + 70 * Math.sin(angle * Math.PI / 180)} r="6" fill="#FFFFFF" style={{ filter: 'url(#neon-glow-portal)' }} />
+                  <circle key={angle} cx={100 + 70 * Math.cos(angle * Math.PI / 180)} cy={100 + 70 * Math.sin(angle * Math.PI / 180)} r="6" fill="#FFFFFF" className="md:[filter:url(#neon-glow-portal)]" />
                 ))}
               </g>
 
               <circle cx="100" cy="100" r="15" fill="#000000" stroke="#22D3EE" strokeWidth="1" />
-              <circle cx="100" cy="100" r="15" fill="none" stroke="#22D3EE" strokeWidth="3" opacity="0.4" style={{ filter: 'url(#neon-glow-portal)' }}>
+              <circle cx="100" cy="100" r="15" fill="none" stroke="#22D3EE" strokeWidth="3" opacity="0.4" className="md:[filter:url(#neon-glow-portal)]">
                 <animate attributeName="r" values="15;22;15" dur="3s" repeatCount="indefinite" />
               </circle>
-              <circle cx="100" cy="100" r="8" fill="#FFFFFF" style={{ filter: 'url(#neon-glow-portal)' }}>
+              <circle cx="100" cy="100" r="8" fill="#FFFFFF" className="md:[filter:url(#neon-glow-portal)]">
                 <animate attributeName="r" values="8;12;8" dur="1.5s" repeatCount="indefinite" />
               </circle>
             </svg>
