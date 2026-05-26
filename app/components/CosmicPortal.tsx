@@ -439,15 +439,15 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
                     {gameState === 'GAME_OVER' && (
                       <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/90 p-4 md:p-6 text-center space-y-4 md:space-y-6 backdrop-blur-sm">
                         <div className="space-y-1 md:space-y-2">
-                          <span className="text-red-500 font-mono text-sm md:text-base font-bold tracking-widest block uppercase drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">// CONEXIÓN PERDIDA</span>
-                          <p className="text-neutral-400 text-xs md:text-sm">Rendimiento final: <strong className="text-white font-mono text-base md:text-lg">{engineRef.current.internalScore} pts</strong></p>
+                          <span className="text-red-500 font-mono text-sm md:text-base font-bold tracking-widest block uppercase drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">// GAME OVER!</span>
+                          <p className="text-neutral-400 text-xs md:text-sm">Final performance <strong className="text-white font-mono text-base md:text-lg">{engineRef.current.internalScore} pts</strong></p>
                         </div>
                         <div className="flex flex-col md:flex-row gap-3 md:gap-4 pt-2 md:pt-4 w-full md:w-auto px-4 md:px-0">
                           <button onClick={() => setGameState('SELECT_CHAR')} className="w-full md:w-auto px-4 md:px-6 py-2.5 md:py-3 border border-neutral-800 rounded-lg md:rounded-xl text-[10px] md:text-xs font-mono text-neutral-400 hover:border-cyan-400 hover:text-cyan-400 uppercase transition-all bg-neutral-900/50">
                             Cambiar Arquetipo
                           </button>
                           <button onClick={() => startGame(selectedFaction!)} className="w-full md:w-auto flex justify-center items-center gap-2 px-4 md:px-6 py-2.5 md:py-3 bg-red-600 text-white font-bold font-mono rounded-lg md:rounded-xl text-[10px] md:text-xs uppercase hover:bg-red-500 transition-all shadow-[0_0_20px_rgba(239,68,68,0.4)]">
-                            <RefreshCcw className="w-3 h-3 md:w-4 md:h-4" /> Reiniciar Simulación
+                            <RefreshCcw className="w-3 h-3 md:w-4 md:h-4" /> Restart Simulation
                           </button>
                         </div>
                       </div>
