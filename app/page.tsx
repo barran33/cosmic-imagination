@@ -76,7 +76,7 @@ const AstronautWidget = () => {
 
         {/* Si quieres mantener el texto SYSTEM_RIDER, lo dejas debajo */}
         <span className="hidden md:inline-block absolute -bottom-4 font-mono text-[9px] tracking-[0.2em] text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 uppercase whitespace-nowrap bg-black/80 px-3 py-1 border border-cyan-500/30 rounded backdrop-blur-md">
-          SYSTEM_RIDER // ACTIVE
+          COSMIC_SYSTEM // ACTIVE
         </span>
       </motion.div>
 
