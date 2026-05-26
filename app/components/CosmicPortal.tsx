@@ -31,8 +31,8 @@ const PERSONAJES = [
   { id: 'char_2', name: 'Celestial Hacker', class: 'Captain369', cardImg: '/cosmic-universe/cards/capitan369.png', assetImg: '/cosmic-universe/assets/captain369.png', stats: [ { label: 'PROCESAMIENTO', val: 60 }, { label: 'SIGILO', val: 95 }, { label: 'ESTABILIDAD', val: 50 } ] },
   { id: 'char_3', name: 'Galactic warrior', class: 'Code Samurai', cardImg: '/cosmic-universe/cards/pirate66.PNG', assetImg: '/cosmic-universe/assets/space_pirate9.png', stats: [ { label: 'PROCESAMIENTO', val: 75 }, { label: 'SIGILO', val: 30 }, { label: 'ESTABILIDAD', val: 98 } ] },
   { id: 'char_4', name: 'Chrono Hacker', class: 'Time Manipulator', cardImg: '/cosmic-universe/cards/guardian33.PNG', assetImg: '/cosmic-universe/assets/guardian3.png', stats: [ { label: 'PROCESAMIENTO', val: 88 }, { label: 'SIGILO', val: 70 }, { label: 'ESTABILIDAD', val: 65 } ] },
-  { id: 'char_5', name: 'Aether Blade', class: 'Energy Vanguard', cardImg: '/cosmic-universe/cards/guardian99.PNG', assetImg: '/cosmic-universe/assets/guardian9.PNG', stats: [ { label: 'PROCESAMIENTO', val: 80 }, { label: 'SIGILO', val: 85 }, { label: 'ESTABILIDAD', val: 70 } ] },
-  { id: 'char_6', name: 'Cosmic Oracle', class: 'Data Seer', cardImg: '/cosmic-universe/cards/guardian66.PNG', assetImg: '/cosmic-universe/assets/guardian6.PNG', stats: [ { label: 'PROCESAMIENTO', val: 99 }, { label: 'SIGILO', val: 50 }, { label: 'ESTABILIDAD', val: 60 } ] }
+  { id: 'char_5', name: 'Aether Blade', class: 'Energy Vanguard', cardImg: '/cosmic-universe/cards/guardian99.PNG', assetImg: '/cosmic-universe/assets/guardian9.png', stats: [ { label: 'PROCESAMIENTO', val: 80 }, { label: 'SIGILO', val: 85 }, { label: 'ESTABILIDAD', val: 70 } ] },
+  { id: 'char_6', name: 'Cosmic Oracle', class: 'Data Seer', cardImg: '/cosmic-universe/cards/guardian66.PNG', assetImg: '/cosmic-universe/assets/guardian6.png', stats: [ { label: 'PROCESAMIENTO', val: 99 }, { label: 'SIGILO', val: 50 }, { label: 'ESTABILIDAD', val: 60 } ] }
 ];
 
 interface CosmicPortalProps { isOpen: boolean; onClose: () => void; }
