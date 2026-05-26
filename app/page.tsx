@@ -31,112 +31,55 @@ const AstronautWidget = () => {
         <div className="absolute bottom-4 md:bottom-6 w-10 h-10 md:w-16 md:h-16 bg-cyan-500/20 rounded-full blur-xl group-hover:bg-cyan-400/40 transition-all duration-700" />
         
         {/* SVG del Astronauta Cuántico con sombras optimizadas por CSS */}
-        <svg viewBox="0 0 100 120" className="w-full h-full drop-shadow-[0_0_8px_rgba(6,182,212,0.4)] group-hover:drop-shadow-[0_0_25px_rgba(34,211,238,0.8)] transition-all duration-500">
-          <defs>
-            <linearGradient id="visor-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#082f49" />
-              <stop offset="50%" stopColor="#000000" />
-              <stop offset="100%" stopColor="#0891b2" />
-            </linearGradient>
-            <linearGradient id="flame-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#22D3EE" stopOpacity="0.9" />
-              <stop offset="100%" stopColor="#0891B2" stopOpacity="0" />
-            </linearGradient>
-          </defs>
+        <motion.div
+        whileHover={{ scale: 1.1, rotate: 5 }} // Puedes añadir rotación extra al hacer hover
+        className="relative w-20 h-28 md:w-32 md:h-44 flex flex-col items-center justify-center animate-float-supreme"
+      >
+        {/* Aura de energía (mantenemos los efectos de luz) */}
+        <div className="absolute inset-0 bg-cyan-500/0 rounded-full blur-2xl group-hover:bg-cyan-500/10 transition-all duration-700" />
+        <div className="absolute bottom-4 md:bottom-6 w-10 h-10 md:w-16 md:h-16 bg-cyan-500/20 rounded-full blur-xl group-hover:bg-cyan-400/40 transition-all duration-700" />
 
-          {/* Cuerpo / Traje Espacial */}
-          <g fill="#FFFFFF" stroke="#06B6D4" strokeWidth="1">
-            <circle cx="50" cy="40" r="18" fill="#0d0d0d" strokeWidth="1.5" />
-            
-            {/* Visor Neón - Optimización de filtro nativo usando clases CSS en vez de SVG de desenfoque pesado */}
-            <ellipse cx="50" cy="38" rx="13" ry="10" fill="url(#visor-gradient)" stroke="#22D3EE" strokeWidth="1.5" className="md:[filter:url(#neon-glow)]" />
-            
-            <motion.path 
-              d="M42 33 Q46 30 52 31" 
-              fill="none" 
-              stroke="#FFFFFF" 
-              strokeWidth="1.5" 
-              style={{ willChange: "opacity, pathLength" }}
-              animate={{ opacity: isHovered ? [0.7, 1, 0.7] : 0.7, pathLength: isHovered ? [0.8, 1, 0.8] : 1 }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            />
-            
-            <rect x="26" y="50" width="12" height="28" rx="4" fill="#141414" stroke="#06B6D4" />
-            <rect x="62" y="50" width="12" height="28" rx="4" fill="#141414" stroke="#06B6D4" />
-            
-            <motion.path 
-              d="M36 55 Q50 52 64 55 L60 80 Q50 82 40 80 Z" 
-              fill="#ffffff" 
-              style={{ willChange: "d" }}
-              animate={{ d: ["M36 55 Q50 52 64 55 L60 80 Q50 82 40 80 Z", "M36 54 Q50 51 64 54 L61 80 Q50 83 39 80 Z", "M36 55 Q50 52 64 55 L60 80 Q50 82 40 80 Z"] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            />
-            
-            <motion.path 
-              d="M36 56 Q24 60 26 70" 
-              fill="none" 
-              stroke="#ffffff" 
-              strokeWidth="7" 
-              strokeLinecap="round"
-              style={{ transformOrigin: "36px 56px", willChange: "transform, d" }}
-              animate={isHovered ? { 
-                d: [
-                  "M36 56 Q20 40 18 26", 
-                  "M36 56 Q25 38 24 24", 
-                  "M36 56 Q15 42 14 28", 
-                  "M36 56 Q20 40 18 26"  
-                ],
-                rotate: [0, -4, 6, 0] 
-              } : { 
-                d: "M36 56 Q24 60 26 70",
-                rotate: 0 
-              }}
-              transition={isHovered ? { duration: 1.4, repeat: Infinity, ease: "easeInOut" } : { duration: 0.4 }}
-            />
-            
-            <motion.path 
-              d="M64 56 Q74 64 70 74" 
-              fill="none" 
-              stroke="#ffffff" 
-              strokeWidth="7" 
-              strokeLinecap="round"
-              style={{ transformOrigin: "64px 56px", willChange: "transform" }}
-              animate={isHovered ? { rotate: [0, 5, -3, 0] } : { rotate: 0 }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            />
-            
-            <path d="M42 80 L38 98" fill="none" stroke="#ffffff" strokeWidth="8" strokeLinecap="round" />
-            <path d="M58 80 L62 98" fill="none" stroke="#ffffff" strokeWidth="8" strokeLinecap="round" />
-          </g>
+        <div className="relative w-full h-full">
+          {/* Cuerpo Base fijo */}
+          <img 
+            src="/cosmic-universe/assets/captain-963.png" 
+            className="absolute inset-0 w-full h-full object-contain" 
+            alt="Space Pirate Body"
+          />
+          
+          {/* Brazo animado con herencia de estado para asegurar el disparo */}
+          <motion.img 
+            src="/cosmic-universe/assets/brazo-captain-369.png"
+            className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+            style={{ 
+              /* Ajusta el pivote en el hombro. 
+                Si el personaje mira a la izquierda y su hombro está a la derecha: 0.75 y 0.30 está bien.
+                Si el personaje mira a la derecha y su hombro está a la izquierda, cambia a: "0.25", "0.30"
+              */
+              originX: "0.25", 
+              originY: "0.30" 
+            }} 
+            animate={{ 
+              /* Reducimos el rango a oscilaciones más sutiles y progresivas */
+              rotate: isHovered ? [0, -12, 8, -6, 4, 0] : 0 
+            }}
+            transition={{ 
+              /* Un poco más de tiempo para que la física del brazo actúe de forma realista */
+              duration: isHovered ? 1.5 : 0.4, 
+              /* Aplicamos una curva de flexión (ease) para cada transición de la secuencia */
+              ease: isHovered 
+                ? ["easeInOut", "easeInOut", "easeInOut", "easeInOut", "easeInOut"] 
+                : "easeOut"
+            }}
+          />
+        </div>
 
-          <rect x="33" y="96" width="10" height="5" rx="2" fill="#080808" stroke="#22D3EE" strokeWidth="1" />
-          <rect x="57" y="96" width="10" height="5" rx="2" fill="#080808" stroke="#22D3EE" strokeWidth="1" />
-
-          {/* HOVERBOARD */}
-          <g transform="translate(0, 102)">
-            <ellipse cx="50" cy="3" rx="32" ry="4" fill="#0a0a0a" stroke="#22D3EE" strokeWidth="2" className="md:[filter:url(#neon-glow)]" />
-            <path d="M18 3 L14 -1 M82 3 L86 -1" stroke="#FFFFFF" strokeWidth="1.5" opacity="0.8" />
-            
-            <motion.path 
-              d="M38 7 L50 16 L62 7" 
-              fill="url(#flame-gradient)" 
-              stroke="#22D3EE" 
-              strokeWidth="1"
-              opacity="0.8"
-              className="md:[filter:url(#neon-glow)]"
-              style={{ willChange: "d, opacity" }}
-              animate={isHovered 
-                ? { d: ["M38 7 L50 18 L62 7", "M38 7 L50 14 L62 7", "M38 7 L50 18 L62 7"], opacity: [0.7, 1, 0.7] }
-                : { d: ["M38 7 L50 16 L62 7", "M38 7 L50 12 L62 7", "M38 7 L50 16 L62 7"], opacity: [0.5, 0.8, 0.5] }
-              }
-              transition={{ duration: 0.3, repeat: Infinity, ease: "linear" }}
-            />
-          </g>
-        </svg>
-
+        {/* Si quieres mantener el texto SYSTEM_RIDER, lo dejas debajo */}
         <span className="hidden md:inline-block absolute -bottom-4 font-mono text-[9px] tracking-[0.2em] text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 uppercase whitespace-nowrap bg-black/80 px-3 py-1 border border-cyan-500/30 rounded backdrop-blur-md">
           SYSTEM_RIDER // ACTIVE
         </span>
+      </motion.div>
+
       </div>
     </motion.div>
   );
