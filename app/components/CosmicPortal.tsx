@@ -426,18 +426,24 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
         ctx.lineTo(obs.x + 40, H - obs.bottom);
         ctx.stroke();
 
-        // Colisión
-        if (obs.x < 150 && obs.x + 40 > 90) {
+        // ── COLISIÓN CALIBRADA PARA X = 260 ──
+        // (Rango de 230 a 290 para cubrir los 60px de ancho del área del personaje)
+        if (obs.x < 290 && obs.x + 40 > 230) {
           if (s.playerY - 25 < obs.top || s.playerY + 25 > H - obs.bottom) {
             setHighScore(prev => Math.max(prev, s.internalScore));
             setGameState('GAME_OVER');
             return;
           }
         }
-        if (!obs.passed && obs.x < 90) {
+
+        // ── SCORE RECALIBRADO PARA X = 260 ──
+        // Se activa exactamente cuando el borde trasero del pilar pasa la espalda del jugador (230)
+        if (!obs.passed && obs.x < 230) {
           obs.passed = true;
           s.internalScore += 10;
-          if (scoreDisplayRef.current) scoreDisplayRef.current.innerText = s.internalScore.toString();
+          if (scoreDisplayRef.current) {
+            scoreDisplayRef.current.innerText = s.internalScore.toString();
+          }
         }
       }
 
