@@ -335,15 +335,18 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
         return;
       }
 
-      // Partículas de estela
+     // Partículas de estela — SINCRO CON LA NUEVA X (260)
       if (s.frame % 2 === 0) {
         s.particles.push({
-          x: 100, y: s.playerY + (Math.random() * 16 - 8),
-          size: Math.random() * 5 + 2, alpha: 1, speedY: Math.random() * 2 - 1,
+          x: 230, // <-- Cambiado de 100 a 230 para que salgan EXACTAMENTE de la espalda del personaje
+          y: s.playerY + (Math.random() * 16 - 8),
+          size: Math.random() * 5 + 2, 
+          alpha: 1, 
+          speedY: Math.random() * 2 - 1,
         });
       }
 
-      // Dibujar partículas — iteración en reversa
+      // Dibujar partículas — iteración en reversa (Tu código original intacto)
       for (let i = s.particles.length - 1; i >= 0; i--) {
         const p = s.particles[i];
         p.x -= s.speed * 0.8; 
@@ -363,9 +366,8 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
         ctx.restore();              // Restauramos el canvas para que no afecte el renderizado de lo demás
       }
       
-      // Dibujar jugador (sprite precalculado)
       ctx.save();
-      ctx.translate(120, s.playerY);
+      ctx.translate(260, s.playerY); // <-- Cambiado de 120 a 260 para empujarlo al centro-derecha
       ctx.rotate(s.angle);
       if (s.avatarImg) {
         ctx.drawImage(s.avatarImg, -40, -40, 80, 80);
@@ -387,6 +389,14 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
         const obs = s.obstacles[i];
         obs.x -= s.speed;
         if (obs.x < -60) { s.obstacles.splice(i, 1); continue; }
+
+        if (obs.x < 260 + 25 && obs.x + 60 > 260 - 25) {
+          if (s.playerY - 20 < obs.top || s.playerY + 20 > H - obs.bottom) {
+            setHighScore(prev => Math.max(prev, s.internalScore));
+            setGameState('GAME_OVER');
+            return;
+          }
+        }
 
      // 1. Pilares con gradiente macizo
         const pg = ctx.createLinearGradient(obs.x, 0, obs.x + 40, 0);
@@ -493,7 +503,7 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
  // ============================================================
   // INICIO DE PARTIDA
   // ============================================================
-  const startGame = (factionKey: keyof typeof FACCIONES) => {
+ const startGame = (factionKey: keyof typeof FACCIONES) => {
     setSelectedFaction(factionKey);
     factionRef.current = factionKey;
     setTriviaActive(false);
@@ -501,18 +511,29 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
     setShowContact(false);
     setStreak(0);
     usedQRef.current.clear();
+    
+    // ── INICIALIZACIÓN OPTIMIZADA PARA ALTO = 600 ──
     engineRef.current = {
-      playerY: 225, velocity: 0, gravity: 0.35, jump: -7.5, angle: 0,
-      obstacles: [], nodes: [], particles: [], stars: [], nebulae: [],
-      frame: 0, speed: 4.5,
+      playerY: 300,        // <-- Elevamos de 225 a 300 para que aparezca EXACTAMENTE en el centro vertical
+      velocity: 0,         // Arranca estático sin caídas raras
+      gravity: 0.35, 
+      jump: -7.5, 
+      angle: 0,
+      obstacles: [], 
+      nodes: [], 
+      particles: [], 
+      stars: [], 
+      nebulae: [],
+      frame: 0, 
+      speed: 4.5,
       avatarImg: engineRef.current.avatarImg,
       color: FACCIONES[factionKey].color,
       internalScore: 0,
     };
+    
     if (scoreDisplayRef.current) scoreDisplayRef.current.innerText = '0';
     setGameState('PLAYING');
   };
-
   // ============================================================
   // RESPUESTA TRIVIA
 
