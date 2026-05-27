@@ -858,23 +858,28 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
                     </div>
                   </div>
 
-                  {/* Canvas wrapper */}
-                    <div
-                    className="relative w-full max-w-[800px] h-[55vw] max-h-[506px] md:aspect-video md:h-auto bg-black rounded-lg md:rounded-xl overflow-hidden border border-neutral-800"
-                    style={{
-                      aspectRatio: undefined, // lo controlamos con la clase de abajo
-                    }}
+                  
+                    {/* Canvas wrapper */}
+                    <div 
+                      className="relative w-full max-w-[900px] h-auto flex flex-col items-center justify-start overflow-y-auto max-h-[85vh] pr-1"
+                      style={{
+                        aspectRatio: undefined,
+                      }}
                     >
 
-                    {/* ── TRIVIA OVERLAY ── */}
+                   {/* ── TRIVIA OVERLAY REAL RESPONSIVO ── */}
                     <AnimatePresence>
                       {triviaActive && currentQuestion && (
                         <motion.div
                           initial={{ opacity: 0, scale: 0.98 }}
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0 }}
-                         className="absolute inset-0 z-30 flex flex-col justify-start p-3 md:p-8 space-y-2 md:space-y-5 overflow-y-auto"
-                          style={{ background: 'rgba(2,2,14,0.97)', backdropFilter: 'blur(10px)' }}
+                          className="absolute inset-0 z-30 flex flex-col justify-start p-3 md:p-8 space-y-3 md:space-y-5 overflow-y-auto max-h-full pb-10 custom-scrollbar"
+                          style={{ 
+                            background: 'rgba(2,2,14,0.97)', 
+                            backdropFilter: 'blur(10px)',
+                            WebkitOverflowScrolling: 'touch' // <-- Fuerza el scroll suave en Safari/iOS/Instagram
+                          }}
                         >
                           <div className="flex items-center justify-between border-b border-yellow-500/20 pb-2">
                             <div className="flex items-center gap-2 font-mono text-[10px] md:text-xs font-bold text-yellow-400">
@@ -985,11 +990,13 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
                       </motion.div>
                     )}
 
-                    <canvas
+                  <canvas
                       ref={canvasRef}
+                      width={900}
+                      height={600}
                       onMouseDown={handleJump}
                       onTouchStart={(e) => { e.preventDefault(); handleJump(); }}
-                      className="w-full h-full block cursor-pointer bg-black"
+                      className="w-full h-[40vh] min-h-[380px] md:h-[600px] block cursor-pointer bg-black rounded-xl border border-neutral-800/50 object-cover"
                     />
                   </div>
 
