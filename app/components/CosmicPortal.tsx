@@ -860,14 +860,10 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
 
                   {/* Canvas wrapper */}
                     <div
-                      className="relative w-full max-w-[800px] aspect-video bg-black rounded-lg md:rounded-xl overflow-hidden border border-neutral-800"
-                      style={{
-                        boxShadow: `0 0 50px rgba(0,0,0,0.9), 0 0 1px ${
-                          selectedFaction
-                            ? FACCIONES[selectedFaction as keyof typeof FACCIONES].color + '40'
-                            : '#ffffff15'
-                        }`,
-                      }}
+                    className="relative w-full max-w-[800px] h-[55vw] max-h-[506px] md:aspect-video md:h-auto bg-black rounded-lg md:rounded-xl overflow-hidden border border-neutral-800"
+                    style={{
+                      aspectRatio: undefined, // lo controlamos con la clase de abajo
+                    }}
                     >
 
                     {/* ── TRIVIA OVERLAY ── */}
@@ -877,7 +873,7 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
                           initial={{ opacity: 0, scale: 0.98 }}
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0 }}
-                          className="absolute inset-0 z-30 flex flex-col justify-center p-4 md:p-8 space-y-3 md:space-y-5"
+                         className="absolute inset-0 z-30 flex flex-col justify-start p-3 md:p-8 space-y-2 md:space-y-5 overflow-y-auto"
                           style={{ background: 'rgba(2,2,14,0.97)', backdropFilter: 'blur(10px)' }}
                         >
                           <div className="flex items-center justify-between border-b border-yellow-500/20 pb-2">
@@ -991,11 +987,9 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
 
                     <canvas
                       ref={canvasRef}
-                      width={900}  // Tu ancho estándar
-                      height={600} // El nuevo alto expandido de arriba a abajo
                       onMouseDown={handleJump}
                       onTouchStart={(e) => { e.preventDefault(); handleJump(); }}
-                      className="w-full h-auto block cursor-pointer bg-black rounded-xl border border-neutral-800/50"
+                      className="w-full h-full block cursor-pointer bg-black"
                     />
                   </div>
 
