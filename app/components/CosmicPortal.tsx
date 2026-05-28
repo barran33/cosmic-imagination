@@ -101,11 +101,20 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
   const [charBobOffset, setCharBobOffset]     = useState(0);
 
   // Form refs (evita re-renders en cada keystroke)
-  // Form refs (evita re-renders en cada keystroke)
-  const nameRef    = useRef<HTMLInputElement | null>(null);
-  const emailRef   = useRef<HTMLInputElement | null>(null);
-  const phoneRef   = useRef<HTMLInputElement | null>(null);
-  const messageRef = useRef<HTMLTextAreaElement | null>(null); // Usar HTMLTextAreaElement si es un textarea
+
+// ── ESTADO CONTROLADO DEL FORMULARIO (REEMPLAZA LOS USE-REF) ──
+  const [formData, setFormData]               = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: '',
+    subject: 'Nueva Misión desde Terminal Cosmic',
+  });
+
+  // Manejador dinámico de inputs
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   // Engine / canvas refs
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -602,35 +611,48 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
 
 
 // ============================================================
-  // ENVÍO FORMULARIO → FastAPI /api/v1/contact (CORREGIDO)
+  // ENVÍO FORMULARIO → FastAPI /api/v1/contact (SINCRONIZADO)
   // ============================================================
   const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setContactStatus('sending');
+
+    // URL base dinámica idéntica a la del Navbar
+    const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.cosmic-imagination.com';
+
     try {
-      const res = await fetch('/api/v1/contact', {
+      const res = await fetch(`${BASE_API_URL}/api/v1/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name:    nameRef.current?.value    ?? '',
-          email:   emailRef.current?.value   ?? '',
-          phone:   phoneRef.current?.value   ?? '',
-          message: messageRef.current?.value ?? '',
-          subject: 'Nueva Misión desde Terminal Cosmic', 
+          name:    formData.name,
+          email:   formData.email,
+          phone:   formData.phone || 'No registrado', // Evita romper la validación de Pydantic si va vacío
+          message: formData.message,
+          subject: formData.subject,
         }),
       });
+
+      const data = await res.json();
       
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      setContactStatus('success');
-      
-      if (nameRef.current)    nameRef.current.value    = '';
-      if (emailRef.current)   emailRef.current.value   = '';
-      if (phoneRef.current)   phoneRef.current.value   = '';
-      if (messageRef.current) messageRef.current.value = '';
-      
-      setTimeout(() => setContactStatus('idle'), 5000);
+      if (res.ok && data.success) {
+        setContactStatus('success');
+        // Reseteamos el formulario de forma limpia
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          message: '',
+          subject: 'Nueva Misión desde Terminal Cosmic',
+        });
+        setTimeout(() => setContactStatus('idle'), 5000);
+      } else {
+        console.error('Interferencia detectada en el payload del backend:', data.detail);
+        setContactStatus('error');
+        setTimeout(() => setContactStatus('idle'), 4000);
+      }
     } catch (err) {
-      console.error('Contact form error:', err);
+      console.error('Fallo crítico en la conexión cósmica:', err);
       setContactStatus('error');
       setTimeout(() => setContactStatus('idle'), 4000);
     }
@@ -712,7 +734,7 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
             {/* ── BODY ── */}
             <div className="p-3 md:p-10 bg-gradient-to-b from-[#020208] to-[#040410] relative flex-1 flex flex-col justify-center overflow-y-auto overflow-x-hidden md:overflow-visible">
 
-              {/* ════════════════════ SELECT_CHAR ════════════════════ */}triviaActive
+              {/* ════════════════════ SELECT_CHAR ════════════════════ */}
               {gameState === 'SELECT_CHAR' && !showContact && (
                 <motion.div
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }}
@@ -1088,32 +1110,67 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
                   )}
 
                   <form onSubmit={handleContactSubmit} className="space-y-3 md:space-y-4 font-sans">
+                    {/* Nombre Operativo */}
                     <div className="relative">
                       <User className="absolute left-3.5 top-3 w-4 h-4 text-neutral-600" />
-                      <input ref={nameRef} type="text" required placeholder="Nombre Operativo"
-                        className="w-full bg-black border border-neutral-800 focus:border-cyan-400 rounded-xl pl-10 pr-4 py-3 text-xs md:text-sm text-white font-mono outline-none transition-colors placeholder:text-neutral-700"
+                      <input 
+                        type="text" 
+                        name="name"
+                        required 
+                        disabled={contactStatus === 'sending'}
+                        placeholder="Nombre Operativo"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        className="w-full bg-black border border-neutral-800 focus:border-cyan-400 rounded-xl pl-10 pr-4 py-3 text-xs md:text-sm text-white font-mono outline-none transition-colors placeholder:text-neutral-700 disabled:opacity-40"
                       />
                     </div>
+
+                    {/* Email y Teléfono */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <div className="relative">
                         <Mail className="absolute left-3.5 top-3 w-4 h-4 text-neutral-600" />
-                        <input ref={emailRef} type="email" required placeholder="Email Corporativo"
-                          className="w-full bg-black border border-neutral-800 focus:border-cyan-400 rounded-xl pl-10 pr-4 py-3 text-xs md:text-sm text-white font-mono outline-none transition-colors placeholder:text-neutral-700"
+                        <input 
+                          type="email" 
+                          name="email"
+                          required 
+                          disabled={contactStatus === 'sending'}
+                          placeholder="Email Corporativo"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          className="w-full bg-black border border-neutral-800 focus:border-cyan-400 rounded-xl pl-10 pr-4 py-3 text-xs md:text-sm text-white font-mono outline-none transition-colors placeholder:text-neutral-700 disabled:opacity-40"
                         />
                       </div>
                       <div className="relative">
                         <Phone className="absolute left-3.5 top-3 w-4 h-4 text-neutral-600" />
-                        <input ref={phoneRef} type="text" placeholder="Frecuencia (Tel)"
-                          className="w-full bg-black border border-neutral-800 focus:border-cyan-400 rounded-xl pl-10 pr-4 py-3 text-xs md:text-sm text-white font-mono outline-none transition-colors placeholder:text-neutral-700"
+                        <input 
+                          type="text" 
+                          name="phone"
+                          disabled={contactStatus === 'sending'}
+                          placeholder="Frecuencia (Tel)"
+                          value={formData.phone}
+                          onChange={handleInputChange}
+                          className="w-full bg-black border border-neutral-800 focus:border-cyan-400 rounded-xl pl-10 pr-4 py-3 text-xs md:text-sm text-white font-mono outline-none transition-colors placeholder:text-neutral-700 disabled:opacity-40"
                         />
                       </div>
                     </div>
+
+                    {/* Mensaje */}
                     <div className="relative">
                       <MessageSquare className="absolute left-3.5 top-3.5 w-4 h-4 text-neutral-600" />
-                      <textarea ref={messageRef} rows={4} required placeholder="Describe tu visión arquitectónica..."
-                        className="w-full bg-black border border-neutral-800 focus:border-cyan-400 rounded-xl pl-10 pr-4 py-3 text-xs md:text-sm text-white font-mono outline-none resize-none transition-colors placeholder:text-neutral-700"
+                      <textarea 
+                        name="message"
+                        rows={4} 
+                        required 
+                        disabled={contactStatus === 'sending'}
+                        placeholder="Describe tu visión arquitectónica..."
+                        value={formData.message}
+                        onChange={handleInputChange}
+                        className="w-full bg-black border border-neutral-800 focus:border-cyan-400 rounded-xl pl-10 pr-4 py-3 text-xs md:text-sm text-white font-mono outline-none resize-none transition-colors placeholder:text-neutral-700 disabled:opacity-40"
                       />
                     </div>
+
+
+                    {/* Botón de Transmisión */}
                     <button
                       type="submit"
                       disabled={contactStatus === 'sending'}
@@ -1125,7 +1182,6 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
                       }
                     </button>
                   </form>
-
                   {/* Nota para el desarrollador sobre el endpoint */}
                   <p className="text-neutral-700 font-mono text-[9px] text-center">
                     → Conectado a <span className="text-neutral-600">/api/contact</span> (FastAPI + Zoho Mail)
