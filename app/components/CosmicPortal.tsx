@@ -459,18 +459,7 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
         node.pulse += 0.09;
         if (node.x < -60) { s.nodes.splice(i, 1); continue; }
 
-        // ── CONTROL DE CAPTURA DE MONEDA (SINCRO CON X = 260) ──
-        // Cambiado el rango viejo a 230-290 para que encaje real con el cuerpo de la nave
-        if (!node.collected && node.x < 290 && node.x > 230) {
-          const distY = Math.abs(node.y - s.playerY);
-          if (distY < 40) {
-            node.collected = true;   // 1. La marca como recogida
-            setTriviaActive(true);   // 2. Dispara la trivia al instante
-            s.nodes.splice(i, 1);    // 3. ¡DESAPARECE la moneda del canvas ya mismo!
-            continue;                // Saltamos al siguiente para evitar parpadeos
-          }
-        }
-
+    
       // Halo pulsante (sin shadowBlur)
         const pulseAlpha = 0.08 + 0.07 * Math.sin(node.pulse);
         ctx.fillStyle = `rgba(250,204,21,${pulseAlpha})`;
@@ -723,7 +712,7 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
             {/* ── BODY ── */}
             <div className="p-3 md:p-10 bg-gradient-to-b from-[#020208] to-[#040410] relative flex-1 flex flex-col justify-center overflow-y-auto overflow-x-hidden md:overflow-visible">
 
-              {/* ════════════════════ SELECT_CHAR ════════════════════ */}
+              {/* ════════════════════ SELECT_CHAR ════════════════════ */}triviaActive
               {gameState === 'SELECT_CHAR' && !showContact && (
                 <motion.div
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }}
