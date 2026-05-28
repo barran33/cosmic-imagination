@@ -72,8 +72,8 @@ const PERSONAJES = [
   { id: 'char_2', name: 'Celestial Hacker', class: 'Captain369',       cardImg: '/cosmic-universe/cards/capitan369.png',      assetImg: '/cosmic-universe/assets/captain369.png',    stats: [{ label: 'PROCESAMIENTO', val: 60 }, { label: 'SIGILO', val: 95 }, { label: 'ESTABILIDAD', val: 50 }] },
   { id: 'char_3', name: 'Galactic Warrior', class: 'Code Samurai',     cardImg: '/cosmic-universe/cards/pirate66.PNG',        assetImg: '/cosmic-universe/assets/space_pirate9.png', stats: [{ label: 'PROCESAMIENTO', val: 75 }, { label: 'SIGILO', val: 30 }, { label: 'ESTABILIDAD', val: 98 }] },
   { id: 'char_4', name: 'Chrono Hacker',    class: 'Time Manipulator', cardImg: '/cosmic-universe/cards/guardian33.PNG',      assetImg: '/cosmic-universe/assets/guardian3.png',    stats: [{ label: 'PROCESAMIENTO', val: 88 }, { label: 'SIGILO', val: 70 }, { label: 'ESTABILIDAD', val: 65 }] },
-  { id: 'char_5', name: 'Aether Blade',     class: 'Energy Vanguard',  cardImg: '/cosmic-universe/cards/guardian99.PNG',      assetImg: '/cosmic-universe/assets/guardian9.png',    stats: [{ label: 'PROCESAMIENTO', val: 80 }, { label: 'SIGILO', val: 85 }, { label: 'ESTABILIDAD', val: 70 }] },
-  { id: 'char_6', name: 'Cosmic Oracle',    class: 'Data Seer',        cardImg: '/cosmic-universe/cards/guardian66.PNG',      assetImg: '/cosmic-universe/assets/guardian6.png',    stats: [{ label: 'PROCESAMIENTO', val: 99 }, { label: 'SIGILO', val: 50 }, { label: 'ESTABILIDAD', val: 60 }] },
+  { id: 'char_5', name: 'Aether Blade',     class: 'Energy Vanguard',  cardImg: '/cosmic-universe/cards/guardian99.PNG',      assetImg: '/cosmic-universe/assets/guardian6.png',    stats: [{ label: 'PROCESAMIENTO', val: 80 }, { label: 'SIGILO', val: 85 }, { label: 'ESTABILIDAD', val: 70 }] },
+  { id: 'char_6', name: 'Cosmic Oracle',    class: 'Data Seer',        cardImg: '/cosmic-universe/cards/guardian66.PNG',      assetImg: '/cosmic-universe/assets/guardian9.png',    stats: [{ label: 'PROCESAMIENTO', val: 99 }, { label: 'SIGILO', val: 50 }, { label: 'ESTABILIDAD', val: 60 }] },
 ];
 
 // ============================================================
@@ -459,21 +459,53 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
         node.pulse += 0.09;
         if (node.x < -60) { s.nodes.splice(i, 1); continue; }
 
-        // Halo pulsante (sin shadowBlur)
+        // ── CONTROL DE CAPTURA DE MONEDA (SINCRO CON X = 260) ──
+        // Cambiado el rango viejo a 230-290 para que encaje real con el cuerpo de la nave
+        if (!node.collected && node.x < 290 && node.x > 230) {
+          const distY = Math.abs(node.y - s.playerY);
+          if (distY < 40) {
+            node.collected = true;   // 1. La marca como recogida
+            setTriviaActive(true);   // 2. Dispara la trivia al instante
+            s.nodes.splice(i, 1);    // 3. ¡DESAPARECE la moneda del canvas ya mismo!
+            continue;                // Saltamos al siguiente para evitar parpadeos
+          }
+        }
+
+      // Halo pulsante (sin shadowBlur)
         const pulseAlpha = 0.08 + 0.07 * Math.sin(node.pulse);
         ctx.fillStyle = `rgba(250,204,21,${pulseAlpha})`;
         ctx.beginPath(); ctx.arc(node.x, node.y, 22, 0, Math.PI * 2); ctx.fill();
-        // Núcleo
-        ctx.fillStyle = '#facc15';
-        ctx.beginPath(); ctx.arc(node.x, node.y, 11, 0, Math.PI * 2); ctx.fill();
-        // Ícono
-        ctx.fillStyle = '#000';
-        ctx.font = 'bold 11px monospace';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('?', node.x, node.y);
 
-        if (!node.collected && Math.hypot(node.x - 120, node.y - s.playerY) < 42) {
+        // ── NUEVO NÚCLEO: ESTRELLA GEOMÉTRICA VECTORIAL (Reemplaza Núcleo e Ícono) ──
+        ctx.fillStyle = '#facc15'; 
+        ctx.beginPath();
+        
+        const spikes = 5;
+        const outerRadius = 13; // Ajustado a 13 para que guarde una proporción perfecta dentro del halo de 22
+        const innerRadius = 6;  // Controla la profundidad del calado de las puntas
+        let rot = (Math.PI / 2) * 3;
+        let cx = node.x;
+        let cy = node.y;
+        let step = Math.PI / spikes;
+
+        ctx.moveTo(cx, cy - outerRadius);
+        for (let idx = 0; idx < spikes; idx++) {
+          cx = node.x + Math.cos(rot) * outerRadius;
+          cy = node.y + Math.sin(rot) * outerRadius;
+          ctx.lineTo(cx, cy);
+          rot += step;
+
+          cx = node.x + Math.cos(rot) * innerRadius;
+          cy = node.y + Math.sin(rot) * innerRadius;
+          ctx.lineTo(cx, cy);
+          rot += step;
+        }
+        ctx.lineTo(node.x, node.y - outerRadius);
+        ctx.closePath();
+        ctx.fill();
+
+        // ── DETECTOR DE CAPTURA CALIBRADO A X = 260 ──
+        if (!node.collected && Math.hypot(node.x - 260, node.y - s.playerY) < 42) {
           node.collected = true;
           s.nodes.splice(i, 1);
           
@@ -580,15 +612,14 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
   };
 
 
-
- // ============================================================
-  // ENVÍO FORMULARIO → FastAPI /api/contact
+// ============================================================
+  // ENVÍO FORMULARIO → FastAPI /api/v1/contact (CORREGIDO)
   // ============================================================
   const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setContactStatus('sending');
     try {
-      const res = await fetch('/api/contact', {
+      const res = await fetch('/api/v1/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -596,8 +627,10 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
           email:   emailRef.current?.value   ?? '',
           phone:   phoneRef.current?.value   ?? '',
           message: messageRef.current?.value ?? '',
+          subject: 'Nueva Misión desde Terminal Cosmic', 
         }),
       });
+      
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       setContactStatus('success');
       
@@ -614,10 +647,9 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
     }
   };
 
+  // ── VARIABLES DE ESTADO DEL JUEGO RESTAURADAS ──
   const activeChar   = PERSONAJES[charIndex];
   const currentRank  = getRank(totalXP);
-
-
 
 
   // ============================================================
@@ -790,7 +822,7 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
                       className="w-full py-2.5 md:py-4 border-2 border-cyan-400 text-cyan-400 font-mono text-[10px] md:text-xs font-bold tracking-widest uppercase rounded-lg md:rounded-xl transition-all"
                       style={{ background: 'linear-gradient(135deg,rgba(0,255,255,0.04),rgba(0,255,255,0.1))', boxShadow: '0 0 20px rgba(0,255,255,0.08)' }}
                     >
-                      SINTONIZAR
+                      SYNCHRONIZE
                     </motion.button>
                   </div>
                 </motion.div>
@@ -803,8 +835,8 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
                   className="flex flex-col items-center justify-center space-y-6 md:space-y-10 h-full py-4"
                 >
                   <div className="text-center space-y-2">
-                    <h2 className="text-white font-mono text-lg md:text-xl font-bold tracking-widest uppercase">// PROTOCOLO DE DESPLIEGUE</h2>
-                    <p className="text-neutral-500 text-xs md:text-sm">Elige tu vector de aproximación para el entorno de simulación cósmica.</p>
+                    <h2 className="text-white font-mono text-lg md:text-xl font-bold tracking-widest uppercase">// COSMIC TRIP</h2>
+                    <p className="text-neutral-500 text-xs md:text-sm">Choose your cybersecurity team for the cosmic simulation environment.</p>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 w-full max-w-3xl px-2 md:px-0">
@@ -818,7 +850,7 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
                       <Shield className="w-10 h-10 md:w-16 md:h-16 text-cyan-400 group-hover:scale-110 transition-transform relative z-10" />
                       <div className="relative z-10">
                         <h3 className="text-white font-mono text-sm md:text-base font-bold uppercase tracking-wider mb-1 md:mb-2">Blue Team</h3>
-                        <p className="text-neutral-400 text-[10px] md:text-xs leading-relaxed">Defensa proactiva. Mitigación de riesgos, ISO/IEC 27001, hardening y arquitectura segura.</p>
+                        <p className="text-neutral-400 text-[10px] md:text-xs leading-relaxed">Proactive defense. Risk mitigation, ISO/IEC 27001, hardening and secure architecture.</p>
                       </div>
                       <div className="relative z-10 font-mono text-[9px] text-cyan-700 uppercase tracking-wider">{QUESTION_BANK.blue.length} preguntas disponibles</div>
                     </motion.div>
@@ -833,7 +865,7 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
                       <Zap className="w-10 h-10 md:w-16 md:h-16 text-purple-400 group-hover:scale-110 transition-transform relative z-10" />
                       <div className="relative z-10">
                         <h3 className="text-white font-mono text-sm md:text-base font-bold uppercase tracking-wider mb-1 md:mb-2">Red Team</h3>
-                        <p className="text-neutral-400 text-[10px] md:text-xs leading-relaxed">Operaciones ofensivas. Pentesting, explotación de vulnerabilidades y bypass táctico.</p>
+                        <p className="text-neutral-400 text-[10px] md:text-xs leading-relaxed">Offensive operations. Pentesting, vulnerability exploitation and tactical bypass</p>
                       </div>
                       <div className="relative z-10 font-mono text-[9px] text-purple-700 uppercase tracking-wider">{QUESTION_BANK.red.length} preguntas disponibles</div>
                     </motion.div>
@@ -897,15 +929,19 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
                    {/* ── TRIVIA OVERLAY REAL RESPONSIVO ── */}
                     <AnimatePresence>
                       {triviaActive && currentQuestion && (
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.98 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0 }}
+                      <motion.div
+                          initial={{ opacity: 0, scale: 0.98, pointerEvents: 'none' }}
+                          animate={{ 
+                            opacity: triviaActive ? 1 : 0, 
+                            scale: triviaActive ? 1 : 0.98,
+                            pointerEvents: triviaActive ? 'auto' : 'none' 
+                          }}
+                          transition={{ duration: 0.2, ease: "easeOut" }}
                           className="absolute inset-0 z-30 flex flex-col justify-start p-3 md:p-8 space-y-3 md:space-y-5 overflow-y-auto max-h-full pb-10 custom-scrollbar"
                           style={{ 
                             background: 'rgba(2,2,14,0.97)', 
-                            backdropFilter: 'blur(10px)',
-                            WebkitOverflowScrolling: 'touch' // <-- Fuerza el scroll suave en Safari/iOS/Instagram
+                            backdropFilter: triviaActive ? 'blur(10px)' : 'none',
+                            WebkitOverflowScrolling: 'touch' 
                           }}
                         >
                           <div className="flex items-center justify-between border-b border-yellow-500/20 pb-2">
@@ -996,7 +1032,7 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
                           Final performance: <strong className="text-white font-mono text-lg">{engineRef.current.internalScore} pts</strong>
                           </p>
                           <p className="font-mono text-[10px] text-neutral-600">
-                            RANGO: <span style={{ color: currentRank.color }}>{currentRank.icon} {currentRank.label}</span>
+                            RANGE: <span style={{ color: currentRank.color }}>{currentRank.icon} {currentRank.label}</span>
                             &nbsp;|&nbsp; XP TOTAL: <span className="text-neutral-400">{totalXP}</span>
                           </p>
                         </div>
@@ -1005,13 +1041,13 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
                             onClick={() => setGameState('SELECT_CHAR')}
                             className="w-full md:w-auto px-5 py-2.5 border border-neutral-800 rounded-xl text-[10px] font-mono text-neutral-400 hover:border-cyan-400 hover:text-cyan-400 uppercase transition-all bg-neutral-900/60"
                           >
-                            Cambiar Arquetipo
+                            Change Archetype
                           </button>
                           <button
                           onClick={() => selectedFaction && startGame(selectedFaction as keyof typeof FACCIONES)}
                           className="w-full md:w-auto flex justify-center items-center gap-2 px-5 py-2.5 bg-red-600 text-white font-bold font-mono rounded-xl text-[10px] uppercase hover:bg-red-500 transition-all shadow-[0_0_20px_rgba(239,68,68,0.4)]"
                         >
-                          <RefreshCcw className="w-3.5 h-3.5" /> Reiniciar
+                          <RefreshCcw className="w-3.5 h-3.5" /> Restart
                         </button>
                         </div>
                       </motion.div>
@@ -1028,7 +1064,7 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
                   </div>
 
                   <p className="text-[8px] md:text-[10px] text-neutral-600 text-center font-mono mt-2 uppercase tracking-widest">
-                    PC: ESPACIO o CLIC &nbsp;|&nbsp; MÓVIL: TOQUE &nbsp;|&nbsp; RECOGE <span className="text-yellow-600">⚡</span> PARA TRIVIA
+                    PC: SPACE or CLICK &nbsp;|&nbsp; MOBILE DEVICE: TOUCH &nbsp;|&nbsp; PICK UP   <span className="">⭐️</span> FOR TRIVIA
                   </p>
                 </div>
               )}
@@ -1040,8 +1076,8 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
                   className="w-full max-w-md mx-auto space-y-4 md:space-y-6 py-4 md:py-8 px-2 md:px-0"
                 >
                   <div className="text-center space-y-1.5">
-                    <h3 className="font-mono text-sm md:text-base font-bold uppercase tracking-widest text-cyan-400">// TERMINAL DE CONTACTO</h3>
-                    <p className="text-neutral-500 text-[10px] md:text-xs">Inyecta tus parámetros para iniciar cotización o consultoría.</p>
+                    <h3 className="font-mono text-sm md:text-base font-bold uppercase tracking-widest text-cyan-400">// CONTACT TERMINAL</h3>
+                    <p className="text-neutral-500 text-[10px] md:text-xs">Describe your technological vision to coordinate a consulting session and transform your ideas into reality.</p>
                   </div>
 
                   {contactStatus === 'success' && (
