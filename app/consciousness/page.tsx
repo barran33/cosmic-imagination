@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Heart, 
@@ -10,14 +10,204 @@ import {
   Atom, 
   Orbit, 
   Cpu, 
-  X 
+  X,
+  Binary,
+  Sparkles,
+  Activity,
+  Infinity as InfinityIcon
 } from 'lucide-react';
 
+// ========================================================
+// COMPONENTE INTERACTIVO: CEREBRO BIFURCADO (ASSET RENDER 3D)
+// ========================================================
+const BifurcatedQuantumBrain = ({ isSynced }: { isSynced: boolean }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [rotateX, setRotateX] = useState(0);
+  const [rotateY, setRotateY] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Manejo de Parallax 3D Suave basado en el cursor
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    
+    // Coordenadas relativas desde el centro del contenedor
+    const mouseX = e.clientX - rect.left - width / 2;
+    const mouseY = e.clientY - rect.top - height / 2;
+    
+    // Inclinación máxima controlada para un comportamiento fluido
+    setRotateX((mouseY / height) * -22);
+    setRotateY((mouseX / width) * 22);
+  };
+
+  const handleMouseLeave = () => {
+    setRotateX(0);
+    setRotateY(0);
+    setIsHovered(false);
+  };
+
+  return (
+    <div 
+      className="w-full flex justify-center items-center py-12 relative select-none"
+      style={{ perspective: "1200px" }}
+    >
+      <motion.div
+        ref={containerRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        onMouseEnter={() => setIsHovered(true)}
+        onTouchStart={() => setIsHovered(true)}
+        onTouchEnd={handleMouseLeave}
+        animate={{ 
+          y: isSynced ? [0, -6, 0] : [0, -12, 0],
+          rotateX: rotateX,
+          rotateY: rotateY
+        }}
+        transition={{ 
+          y: { repeat: Infinity, duration: isSynced ? 2.5 : 5, ease: "easeInOut" },
+          rotateX: { type: "spring", stiffness: 130, damping: 22 },
+          rotateY: { type: "spring", stiffness: 130, damping: 22 }
+        }}
+        style={{ transformStyle: "preserve-3d", willChange: "transform" }}
+        className="w-[280px] h-[280px] sm:w-[380px] sm:h-[380px] relative cursor-grab active:cursor-grabbing flex items-center justify-center bg-[#030712]/30 rounded-full border border-white/[0.02] shadow-[0_0_50px_rgba(0,0,0,0.6)] group"
+      >
+        {/* Anillos de Resonancia de Fondo (Geometría de Campo) */}
+        <div className="absolute inset-4 border border-dashed border-cyan-500/10 rounded-full animate-vortex-slow pointer-events-none transition-opacity duration-500 group-hover:opacity-40" />
+        <div className="absolute inset-12 border border-purple-500/5 rounded-full animate-vortex-reverse pointer-events-none" />
+
+        {/* Halo Lumínico Central Dinámico (Efecto Neon Expandible) */}
+        <motion.div 
+          animate={{
+            scale: isHovered ? 1.3 : 1,
+            opacity: isHovered ? 0.75 : 0.35
+          }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className={`absolute w-44 h-44 rounded-full blur-[75px] mix-blend-screen pointer-events-none transform-gpu transition-all duration-700 ${
+            isSynced ? 'bg-gradient-to-r from-cyan-400 via-white to-purple-500' : 'bg-cyan-500/30'
+          }`} 
+        />
+
+        {/* CONTENEDOR DEL ASSET CON PROFUNDIDAD REAL */}
+        <motion.div
+          style={{ transform: "translateZ(40px)", willChange: "filter" }}
+          animate={{ scale: isHovered ? 1.04 : 1 }}
+          transition={{ type: "spring", stiffness: 140, damping: 20 }}
+          className="w-[82%] h-[82%] relative z-10 flex items-center justify-center"
+        >
+          {/* Render del Cerebro con Proyección de Sombra Neon Inteligente */}
+          <img 
+            src="cosmic-universe/assets/floating-brain.png" 
+            alt="Quantum Bifurcated Brain"
+            className={`w-full h-full object-contain transition-all duration-500 transform-gpu ${
+              isHovered 
+                ? 'filter drop-shadow-[0_0_30px_rgba(0,243,255,0.55)] drop-shadow-[0_0_12px_rgba(168,85,247,0.35)] scale-102' 
+                : 'filter drop-shadow-[0_0_15px_rgba(0,243,255,0.15)] opacity-90'
+            }`}
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+              const parent = e.currentTarget.parentElement;
+              if (parent) {
+                const placeholder = parent.querySelector('.brain-fallback');
+                if (placeholder) placeholder.classList.remove('hidden');
+              }
+            }}
+          />
+
+          {/* Fallback elegante si la imagen se está cargando o no se encuentra */}
+          <div className="brain-fallback hidden absolute inset-0 flex flex-col items-center justify-center text-center p-4 border border-dashed border-cyan-500/20 bg-black/60 rounded-full animate-pulse">
+            <Brain className="w-8 h-8 text-cyan-500/40 mb-1" />
+            <span className="text-[9px] font-mono text-cyan-400/60 tracking-wider">// ASSET_LOADING</span>
+          </div>
+        </motion.div>
+
+        {/* Partículas Binarias Flotantes a la Izquierda */}
+        <div className="absolute left-4 top-1/4 bottom-1/4 w-12 pointer-events-none font-mono text-[8px] text-cyan-500/40 flex flex-col justify-between items-start select-none transition-opacity duration-300 group-hover:opacity-80">
+          <motion.span animate={isSynced ? { opacity: [0.2, 1, 0.2] } : {}} transition={{ repeat: Infinity, duration: 1.5 }}>01101</motion.span>
+          <motion.span animate={isSynced ? { opacity: [0.8, 0.1, 0.8] } : {}} transition={{ repeat: Infinity, duration: 2, delay: 0.3 }}>0x7F</motion.span>
+          <motion.span animate={isSynced ? { opacity: [0.1, 0.9, 0.1] } : {}} transition={{ repeat: Infinity, duration: 1.8, delay: 0.6 }}>SYNC</motion.span>
+        </div>
+
+        {/* Destellos de Luz Mística a la Derecha */}
+        <div className="absolute right-4 top-1/4 bottom-1/4 w-12 pointer-events-none text-purple-400/40 flex flex-col justify-between items-end select-none transition-opacity duration-300 group-hover:opacity-80">
+          <Sparkles className="w-3 h-3 text-purple-400/30 animate-pulse" />
+          <InfinityIcon className="w-3 h-3 text-white/20 animate-spin duration-10000" />
+          <Heart className="w-2.5 h-2.5 text-purple-400/40 animate-ping" />
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+// ========================================================
+// SUB-MÓDULO DE MONITOREO TÁCTICO COGNITIVO
+// ========================================================
+const CognitiveTelemetry = ({ synced }: { synced: boolean }) => {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-[10px] font-mono">
+      <div className="bg-black/50 border border-white/[0.03] p-4 rounded-xl shadow-inner transition-colors duration-300 hover:border-cyan-500/20">
+        <div className="text-neutral-500 flex items-center gap-1.5 uppercase">
+          <Binary className="w-3.5 h-3.5 text-cyan-400" /> Left Hemisphere
+        </div>
+        <span className="text-cyan-400 font-bold block mt-1.5">{synced ? "MATRIZ_LOGIC: 100% OK" : "COMPUTE_LOAD: IDLE"}</span>
+      </div>
+      <div className="bg-black/50 border border-white/[0.03] p-4 rounded-xl shadow-inner transition-colors duration-300 hover:border-purple-500/20">
+        <div className="text-neutral-500 flex items-center gap-1.5 uppercase">
+          <Sparkles className="w-3.5 h-3.5 text-purple-400" /> Right Hemisphere
+        </div>
+        <span className="text-purple-400 font-bold block mt-1.5">{synced ? "COHESION: HARMONIC" : "FLOW_STATE: AWAITING"}</span>
+      </div>
+      <div className="bg-black/50 border border-white/[0.03] p-4 rounded-xl shadow-inner transition-colors duration-300 hover:border-white/10">
+        <div className="text-neutral-500 flex items-center gap-1.5 uppercase">
+          <Activity className="w-3.5 h-3.5 text-white" /> Tesla Resonator
+        </div>
+        <span className="text-white font-bold block mt-1.5">{synced ? "FREQUENCY: 369 Hz" : "STANDBY: 0 Hz"}</span>
+      </div>
+      <div className="bg-black/50 border border-white/[0.03] p-4 rounded-xl shadow-inner transition-colors duration-300 hover:border-cyan-500/20">
+        <div className="text-neutral-500 flex items-center gap-1.5 uppercase">
+          <ShieldCheck className="w-3.5 h-3.5 text-cyan-500" /> Ethical Layer
+        </div>
+        <span className="text-cyan-500 font-bold block mt-1.5">INTEGRITY_BASE: TRUE</span>
+      </div>
+    </div>
+  );
+};
+
+// ========================================================
+// CONTENEDOR PRINCIPAL DE LA PÁGINA
+// ========================================================
 export default function ConsciousnessPage() {
   const [matrixSynced, setMatrixSynced] = useState(false);
   const [neuralLog, setNeuralLog] = useState("NEURAL_CORE: AWAITING_SYNCHRONIZATION // INTENTION_IDLE");
 
-  // Función para activar el dinamismo del Cerebro Cuántico
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes cosmic-vortex-slow {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      @keyframes cosmic-vortex-reverse {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(-360deg); }
+      }
+      .animate-vortex-slow {
+        animation: cosmic-vortex-slow 60s linear infinite;
+        will-change: transform;
+      }
+      .animate-vortex-reverse {
+        animation: cosmic-vortex-reverse 45s linear infinite;
+        will-change: transform;
+      }
+      .text-neon-glow {
+        text-shadow: 0 0 10px rgba(34, 211, 238, 0.4), 0 0 25px rgba(34, 211, 238, 0.15);
+      }
+    `;
+    document.head.appendChild(style);
+    return () => { document.head.removeChild(style); };
+  }, []);
+
   const handleNeuralSync = () => {
     setMatrixSynced(true);
     setNeuralLog("THOUGHT_WAVE_INJECTED: Aligning thought, word, and emotion thresholds.");
@@ -33,127 +223,100 @@ export default function ConsciousnessPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#000205] text-white font-sans selection:bg-cyan-500/30 relative overflow-hidden flex flex-col items-center px-6 py-24 md:py-32">
+    <div className="min-h-screen bg-[#020205] text-white font-sans selection:bg-cyan-500/30 relative overflow-hidden flex flex-col items-center px-4 sm:px-6 py-24 md:py-32">
       
-      {/* Fondo inmersivo: Nebulosa de Fondo Estática en tonalidad Cian Oscuro */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,#001120_0%,#000000_75%)] pointer-events-none z-0" />
+      {/* Fondo inmersivo: Nebulosa Estática */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_25%,#030e1c_0%,#000000_80%)] pointer-events-none z-0" />
       
-      {/* --- SISTEMA DE PARTÍCULAS CUÁNTICAS Y ENLACES --- */}
+      {/* GRID CUÁNTICO REFACTORIZADO PARA EVITAR LAG */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#021626_1px,transparent_1px),linear-gradient(to_bottom,#021626_1px,transparent_1px)] bg-[size:6rem_6rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_30%,#000_60%,transparent_100%)] opacity-25" />
         
-        {/* Grid Cuántico de Ingeniería */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#021d30_1px,transparent_1px),linear-gradient(to_bottom,#021d30_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_30%,#000_60%,transparent_100%)] opacity-30" />
-        
-        {/* Órbita de Fondo Estelar */}
-        <motion.div 
-          animate={{ rotate: -360 }}
-          transition={{ duration: 150, repeat: Infinity, ease: "linear" }}
-          className="absolute bottom-[10%] left-[-120px] w-80 h-80 rounded-full border border-cyan-500/10 bg-gradient-to-tr from-cyan-950/10 via-transparent to-black blur-[1px] hidden lg:block"
-        >
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-2 border-t border-cyan-500/10 rounded-full transform rotate-45" />
-        </motion.div>
-
-        {/* Partículas de Luz y Consciencia Cuántica (Blanco y Cian) */}
-        {[...Array(30)].map((_, idx) => (
+        {/* Partículas de Consciencia con Recorridos Suaves */}
+        {[...Array(20)].map((_, idx) => (
           <motion.div
-            key={`quantum-particle-${idx}`}
-            className={`absolute rounded-full ${idx % 2 === 0 ? 'bg-cyan-400 shadow-[0_0_8px_#00f3ff]' : 'bg-white'}`}
+            key={`quantum-p-${idx}`}
+            className={`absolute rounded-full ${idx % 2 === 0 ? 'bg-cyan-400/40 shadow-[0_0_6px_#00f3ff]' : 'bg-purple-400/30'}`}
             style={{
               width: idx % 2 === 0 ? '2px' : '1.5px',
               height: idx % 2 === 0 ? '2px' : '1.5px',
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              opacity: Math.random() * 0.5 + 0.2,
+              top: `${15 + Math.random() * 70}%`,
+              left: `${5 + Math.random() * 90}%`,
             }}
             animate={matrixSynced ? {
-              y: [0, Math.random() * -200 - 50],
-              x: [0, (Math.random() - 0.5) * 150],
-              scale: [1, Math.random() * 2 + 1, 1],
-              opacity: [0.3, 0.9, 0.3]
+              y: [0, -120],
+              opacity: [0.2, 0.8, 0.2],
+              scale: [1, 1.5, 1]
             } : {
-              y: [0, Math.random() * -30 - 15],
-              opacity: [0.2, 0.6, 0.2],
+              y: [0, -30],
+              opacity: [0.1, 0.5, 0.1],
             }}
             transition={{
-              duration: matrixSynced ? Math.random() * 2.5 + 1 : Math.random() * 7 + 4,
+              duration: matrixSynced ? Math.random() * 3 + 1.5 : Math.random() * 6 + 4,
               repeat: Infinity,
-              ease: "easeInOut",
-              delay: Math.random() * 2,
+              ease: "easeInOut"
             }}
           />
         ))}
       </div>
 
-      <div className="relative z-10 max-w-5xl mx-auto w-full space-y-20">
+      <div className="relative z-10 max-w-5xl mx-auto w-full space-y-16">
         
-        {/* Header con énfasis en el propósito */}
+        {/* Header Principal */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center space-y-6"
+          transition={{ duration: 0.6 }}
+          className="text-center space-y-6 transform-gpu"
         >
           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-neutral-950 border border-cyan-500/20 rounded-full select-none">
             <Orbit className="w-3.5 h-3.5 text-cyan-400 animate-spin duration-3000" />
             <span className="text-cyan-400 font-mono text-[9px] sm:text-[10px] tracking-[0.35em] uppercase">// EVOLUTIONARY CORE</span>
           </div>
 
-          <h2 className="text-5xl md:text-6xl font-extralight uppercase tracking-tighter leading-tight">
-            Conscious <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-cyan-200 font-bold drop-shadow-[0_0_20px_rgba(0,243,255,0.35)]">Development</span>
+          <h2 className="text-4xl sm:text-6xl font-extralight uppercase tracking-tighter leading-tight">
+            Conscious <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-purple-400 font-bold text-neon-glow">Development</span>
           </h2>
 
-          <p className="text-cyan-300/90 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed font-light font-sans">
-            Technology is not an end in itself, it's a catalyst. We design digital ecosystems where operational efficiency converges with human ethics.
+          <p className="text-cyan-200 text-neon-glow-css text-base md:text-lg max-w-2xl mx-auto leading-relaxed font-light font-sans">
+            Technology is not an end in itself, it's a catalyst. We design digital ecosystems where operational efficiency converges gracefully with human ethics.
           </p>
         </motion.div>
 
-        {/* --- NUEVO: CEREBRO CONFIGURANDO (NEURAL MATRIX REACTOR) --- */}
-        <div className="border border-white/5 bg-[#01060f]/40 rounded-[2rem] p-6 md:p-8 font-mono text-xs backdrop-blur-md relative overflow-hidden transform-gpu">
-          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/30 to-transparent" />
+        {/* PIEZA CENTRAL: EL CEREBRO BIFURCADO INTERACTIVO */}
+        <BifurcatedQuantumBrain isSynced={matrixSynced} />
+
+        {/* CONTENEDOR DE CONTROL Y TELEMETRÍA COGNITIVA */}
+        <div className="border border-white/5 bg-[#030611]/60 rounded-[2.5rem] p-6 md:p-8 font-mono text-xs backdrop-blur-sm relative overflow-hidden transform-gpu shadow-2xl">
+          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/20 to-transparent" />
           
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div className="flex items-center gap-3">
-              <Brain className="w-5 h-5 text-cyan-400 animate-pulse" />
+              <div className="p-2.5 bg-neutral-950 rounded-xl border border-white/5">
+                <Brain className={`w-5 h-5 text-cyan-400 ${matrixSynced ? 'animate-pulse' : ''}`} />
+              </div>
               <div>
                 <div className="text-white font-bold uppercase tracking-wider text-[11px]">NEURAL CONFIGURATION CHAMBER</div>
-                <div className="text-neutral-500 text-[9px] mt-0.5">{neuralLog}</div>
+                <div className="text-neutral-500 text-[9px] mt-0.5 truncate max-w-[280px] sm:max-w-none">{neuralLog}</div>
               </div>
             </div>
             
             {!matrixSynced && (
               <button
                 onClick={handleNeuralSync}
-                className="w-full sm:w-auto px-5 py-2.5 bg-cyan-500 hover:bg-cyan-400 rounded-xl font-bold text-black uppercase tracking-wider active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(0,243,255,0.35)]"
+                className="w-full sm:w-auto px-5 py-3 bg-cyan-400 hover:bg-cyan-300 rounded-xl font-bold text-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 font-mono text-[11px] shadow-[0_0_20px_rgba(34,211,238,0.25)] active:scale-[0.98]"
               >
                 <Cpu className="w-3.5 h-3.5 text-black" /> Align Consciousness Matrix
               </button>
             )}
           </div>
 
-          {/* Grid de Estado de Configuración de la Mente */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-[10px]">
-            <div className="bg-black/40 border border-white/[0.02] p-3 rounded-xl">
-              <span className="text-neutral-500 block">THOUGHT_ALIGNMENT</span>
-              <span className="text-cyan-400 font-bold block mt-1">Sychronized (100 Hz)</span>
-            </div>
-            <div className="bg-black/40 border border-white/[0.02] p-3 rounded-xl">
-              <span className="text-neutral-500 block">EMOTION_FREQUENCY</span>
-              <span className="text-white font-bold block mt-1">High-Cohesion Flow</span>
-            </div>
-            <div className="bg-black/40 border border-white/[0.02] p-3 rounded-xl">
-              <span className="text-neutral-500 block">ETHICAL_VALIDATION</span>
-              <span className="text-cyan-400 font-bold block mt-1">Integrity Layer Active</span>
-            </div>
-            <div className="bg-black/40 border border-white/[0.02] p-3 rounded-xl">
-              <span className="text-neutral-500 block">MANIFESTATION_DENSITY</span>
-              <span className={`font-bold block mt-1 transition-colors ${matrixSynced ? 'text-cyan-400 animate-pulse' : 'text-neutral-400'}`}>
-                {matrixSynced ? 'MATERIALIZING_BIT_FLOW' : 'AWAITING_INPUT'}
-              </span>
-            </div>
-          </div>
+          {/* Módulo de Telemetría Aislado */}
+          <CognitiveTelemetry synced={matrixSynced} />
         </div>
 
-        {/* Pilares de Consciencia con Efectos de Movimiento Cuántico */}
-        <div className="space-y-8  text-white relative z-20">
+        {/* Pilares de Consciencia */}
+        <div className="space-y-6 text-white relative z-20">
           {[
             {
               icon: ShieldCheck,
@@ -167,27 +330,27 @@ export default function ConsciousnessPage() {
             },
             {
               icon: Heart,
-              title: "User-centered design",
+              title: "User-Centered Design",
               text: "We build interfaces that respect the user's attention. Less friction, more purpose; tools designed to enhance the human experience, not distract from it."
             }
           ].map((item, i) => (
             <motion.div 
               key={i}
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: -15 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.15 }}
-              whileHover={{ x: 6, borderColor: 'rgba(0,243,255,0.2)' }}
-              className="flex flex-col md:flex-row gap-8 items-start p-8 border-l border-neutral-900 bg-gradient-to-r from-[#01050d]/40 to-transparent hover:from-[#010914]/60 rounded-r-3xl transition-all duration-300 group"
+              transition={{ delay: i * 0.1 }}
+              whileHover={{ x: 4, borderColor: 'rgba(34, 211, 238, 0.2)' }}
+              className="flex flex-col md:flex-row gap-6 items-start p-6 border border-white/[0.02] bg-neutral-950/40 hover:bg-[#040814]/40 rounded-3xl transition-all duration-300 group"
             >
-              <div className="p-4 bg-neutral-950 rounded-2xl border border-white/5 group-hover:border-cyan-500/20 transition-colors">
-                <item.icon className="w-8 h-8 text-cyan-400 transition-transform duration-500 group-hover:scale-110" />
+              <div className="p-4 bg-neutral-950 rounded-2xl border border-white/5 group-hover:border-cyan-500/20 transition-colors shadow-inner">
+                <item.icon className="w-6 h-6 text-cyan-400 transition-transform duration-300 group-hover:scale-105" />
               </div>
-              <div>
-                <h3 className="text-2xl font-bold mb-3 text-neon-glow-css group-hover:text-cyan-400 transition-colors tracking-tight">
+              <div className="space-y-1">
+                <h3 className="text-xl font-bold text-white group-hover:text-cyan-300 transition-colors tracking-tight uppercase font-mono text-neon-glow">
                   {item.title}
                 </h3>
-                <p className="text-neutral-white leading-relaxed max-w-2xl font-light font-sans">
+                <p className="text-neutral-400 text-sm leading-relaxed font-sans font-light max-w-3xl">
                   {item.text}
                 </p>
               </div>
@@ -195,30 +358,32 @@ export default function ConsciousnessPage() {
           ))}
         </div>
 
-        {/* Cierre de Consciencia */}
-        <div className="mt-24 text-center border-t border-neutral-900 pt-16">
-          <Zap className="w-10 h-10 text-cyan-500 mx-auto mb-6 animate-pulse" />
-          <p className="text-neutral-400 font-mono text-sm tracking-widest uppercase select-none">
+        {/* Footer Consciencia */}
+        <div className="text-center pt-8 border-t border-white/[0.03]">
+          <Atom className="w-6 h-6 text-cyan-500 mx-auto mb-4 animate-spin duration-5000 opacity-60" />
+          <p className="text-cyan-200 text-neon-glow-css  font-mono text-[10px] tracking-[0.25em] uppercase select-none">
             // Development with intention. Engineering with impact.
           </p>
         </div>
       </div>
 
-      {/* --- DETONACIÓN MAGA: MODAL INTERACTIVO DEL PROCESO MENTAL --- */}
+      {/* --- MODAL DETONANTE INTERACTIVO --- */}
       <AnimatePresence>
         {matrixSynced && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-md"
-            onClick={handleCloseSync}
-          >
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div
-              initial={{ scale: 0.95, y: 15 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 15 }}
-              className="bg-[#01040a] border border-cyan-500/30 p-8 rounded-[2.5rem] max-w-lg w-full text-center relative overflow-hidden shadow-[0_0_50px_rgba(0,243,255,0.2)] font-mono text-xs"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={handleCloseSync}
+              className="fixed inset-0 bg-black/90 backdrop-blur-sm"
+            />
+
+            <motion.div
+              initial={{ scale: 0.96, y: 15 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.96, y: 15 }}
+              transition={{ type: "spring", duration: 0.5 }}
+              className="bg-[#030307] border border-neutral-800 p-6 md:p-8 rounded-[2.5rem] max-w-md w-full text-center relative overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.9)] font-mono text-xs z-10"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Línea de energía superior blanca/cian */}
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-white to-cyan-400" />
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-cyan-400 via-purple-500 to-cyan-400" />
               
               <button 
                 onClick={handleCloseSync}
@@ -227,41 +392,12 @@ export default function ConsciousnessPage() {
                 <X className="w-4 h-4" />
               </button>
 
-              {/* Contenedor Visual del Cerebro Cuántico en Configuración */}
-              <div className="relative w-32 h-32 mx-auto mb-6 bg-neutral-950 border border-white/10 rounded-full flex items-center justify-center overflow-hidden group shadow-[inset_0_0_20px_rgba(0,243,255,0.2)]">
-                {/* Órbitas rotando tras el núcleo mental */}
+              <div className="relative w-24 h-24 mx-auto mb-6 bg-neutral-950 border border-white/10 rounded-full flex items-center justify-center shadow-inner">
                 <motion.div 
-                  animate={{ rotate: -360 }} transition={{ duration: 7, repeat: Infinity, ease: "linear" }}
-                  className="absolute inset-2 border border-dashed border-cyan-500/20 rounded-full"
+                  animate={{ rotate: 360 }} transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-1 border border-dashed border-cyan-500/20 rounded-full"
                 />
-                <motion.div 
-                  animate={{ rotate: 360 }} transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-                  className="absolute inset-5 border border-white/10 rounded-full"
-                />
-                
-                {/* Iconografía central */}
-                <motion.div 
-                  animate={{ y: [0, -3, 0], scale: [1, 1.03, 1] }}
-                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                  className="relative z-10 flex flex-col items-center justify-center text-cyan-400"
-                >
-                  <Atom className="w-12 h-12 text-cyan-400 animate-spin duration-5000" />
-                  <div className="flex gap-2.5 mt-1">
-                    <span className="w-2 h-1.5 bg-white rounded-full animate-ping" />
-                    <span className="w-2 h-1.5 bg-white rounded-full animate-ping delay-200" />
-                  </div>
-                </motion.div>
-
-                {/* Chispas cuánticas ascendentes */}
-                {[...Array(4)].map((_, i) => (
-                  <motion.div 
-                    key={i}
-                    className="absolute bottom-0 w-1.5 h-1.5 bg-cyan-400/60 rounded-full"
-                    style={{ left: `${20 * (i + 1)}%` }}
-                    animate={{ y: [0, -140], opacity: [0, 1, 0] }}
-                    transition={{ duration: 2, repeat: Infinity, delay: i * 0.5, ease: "easeIn" }}
-                  />
-                ))}
+                <Brain className="w-10 h-10 text-cyan-400 animate-pulse relative z-10" />
               </div>
 
               <span className="text-[9px] px-3 py-1 bg-cyan-950/40 border border-cyan-500/30 rounded-md text-cyan-400 tracking-widest uppercase">
@@ -272,21 +408,21 @@ export default function ConsciousnessPage() {
                 Conscious Manifestation Active
               </h3>
               
-              <div className="space-y-3 text-left bg-black border border-white/5 p-4 rounded-xl text-neutral-400 text-[11px] leading-relaxed">
+              <div className="space-y-2.5 text-left bg-black border border-white/5 p-4 rounded-xl text-neutral-400 text-[11px] leading-relaxed">
                 <div className="text-cyan-400 font-bold">// SECURE MATRIX LOG:</div>
-                <p>1. Operational efficiency matched with human digital ethics.</p>
-                <p>2. Lightweight sustainable footprint injected successfully into nodes.</p>
-                <p>3. Attention-respectful UX interfaces aligned at 0ms latency.</p>
+                <p>1. Operational efficiency integrated with digital human ethics.</p>
+                <p>2. Sustainable framework footprint injected into running clusters.</p>
+                <p>3. Attention-respectful UX components stabilized seamlessly.</p>
               </div>
 
               <button
                 onClick={handleCloseSync}
-                className="w-full mt-6 py-3 bg-cyan-500 text-black font-bold uppercase tracking-widest rounded-xl hover:bg-cyan-400 transition-all shadow-[0_0_20px_rgba(0,243,255,0.3)]"
+                className="w-full mt-6 py-3.5 bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-bold uppercase tracking-widest rounded-xl hover:opacity-95 transition-all shadow-md text-[11px]"
               >
                 Stabilize Intention Link
               </button>
             </motion.div>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
 

@@ -69,7 +69,7 @@ const FACCIONES = {
 
 const PERSONAJES = [
   { id: 'char_1', name: 'Cosmic Pirate',    class: 'Cyber Architect',  cardImg: '/cosmic-universe/cards/cosmic-card.png', assetImg: '/cosmic-universe/assets/cosmic-pirate.png',  stats: [{ label: 'PROCESAMIENTO', val: 90 }, { label: 'SIGILO', val: 96 }, { label: 'ESTABILIDAD', val: 85 }] },
-  { id: 'char_2', name: 'Celestial Hacker', class: 'Captain369',       cardImg: '/cosmic-universe/cards/capitan369.png',      assetImg: '/cosmic-universe/assets/captain369.png',    stats: [{ label: 'PROCESAMIENTO', val: 60 }, { label: 'SIGILO', val: 95 }, { label: 'ESTABILIDAD', val: 50 }] },
+  { id: 'char_2', name: 'Captain T3sla!', class: 'Celestial Hacker369',       cardImg: '/cosmic-universe/cards/tesla369.png',      assetImg: '/cosmic-universe/assets/t3sla369.png',    stats: [{ label: 'PROCESAMIENTO', val: 60 }, { label: 'SIGILO', val: 95 }, { label: 'ESTABILIDAD', val: 50 }] },
   { id: 'char_3', name: 'Galactic Warrior', class: 'Code Samurai',     cardImg: '/cosmic-universe/cards/pirate66.PNG',        assetImg: '/cosmic-universe/assets/space_pirate9.png', stats: [{ label: 'PROCESAMIENTO', val: 75 }, { label: 'SIGILO', val: 30 }, { label: 'ESTABILIDAD', val: 98 }] },
   { id: 'char_4', name: 'Chrono Hacker',    class: 'Time Manipulator', cardImg: '/cosmic-universe/cards/guardian33.PNG',      assetImg: '/cosmic-universe/assets/guardian3.png',    stats: [{ label: 'PROCESAMIENTO', val: 88 }, { label: 'SIGILO', val: 70 }, { label: 'ESTABILIDAD', val: 65 }] },
   { id: 'char_5', name: 'Aether Blade',     class: 'Energy Vanguard',  cardImg: '/cosmic-universe/cards/guardian99.PNG',      assetImg: '/cosmic-universe/assets/guardian6.png',    stats: [{ label: 'PROCESAMIENTO', val: 80 }, { label: 'SIGILO', val: 85 }, { label: 'ESTABILIDAD', val: 70 }] },
@@ -704,9 +704,9 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
 
             {/* ── HEADER ── */}
             <div className="flex border-b border-neutral-900 bg-black/70 justify-between items-center px-3 py-2 md:px-5 md:py-3 shrink-0">
-              <div className="flex items-center gap-2 md:gap-3 font-mono text-[9px] md:text-xs tracking-wider text-neutral-400">
+              <div className="flex items-center gap-2 md:gap-3 font-mono text-[9px] md:text-xs tracking-wider text-cyan-100 text-neon-glow-css">
                 <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_rgba(0,255,255,0.8)]" />
-                <span className="truncate max-w-[140px] md:max-w-none">COSMIC DEV ENGINE v4.0 (VOID MATRIX)</span>
+                <span className="truncate max-w-[140px] md:max-w-none">COSMIC DEV ENGINE v3.6 (VOID MATRIX)</span>
               </div>
               <div className="flex items-center gap-2 md:gap-3">
                 {/* Badge de rango/XP */}
