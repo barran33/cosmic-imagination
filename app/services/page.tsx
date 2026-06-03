@@ -326,14 +326,14 @@ export default function ServicesPage() {
       details: "We map user journeys using universal ratios. Every interface component is mathematically aligned to reduce cognitive load, ensuring that your users navigate your digital ecosystem with intuitive ease, accelerating retention."
     },
     {
-      title: "Strategic Alchemical Audit",
+      title: "CYBERSECURITY & SYSTEMS AUDIT",
       id: "consulting",
       icon: ShieldAlert,
       glowColor: "rgba(168,85,247,0.12)",
       iconColor: "text-purple-400",
-      description: "Tactical consulting and systems auditing. We transform obsolete stacks into modern, secure, and scalable architectures.",
+      description: "Tactical consulting and rigorous infrastructure auditing. We align your systems with international standards, transforming legacy stacks into modern, secure, and highly scalable architectures.",
       features: ["Zero-Trust Cybersecurity Auditing", "Ecosystem Security Verification", "Architecture Transmutation Roadmap"],
-      details: "We perform deep-dive forensics on your current digital architecture. Backed by ISO/IEC 27001 standards, our audit identifies bottlenecks, structural vulnerabilities, and legacy weight, transmuting them into clean operational pipelines."
+      details: "We perform deep-dive forensics on your current digital architecture. Backed by ISO/IEC 27001 standards, our audit identifies structural bottlenecks, vulnerabilities, and technical debt, converting them into optimized, enterprise-grade deployment pipelines."
     }
   ];
 

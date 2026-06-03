@@ -80,13 +80,13 @@ function useQuantumCanvas(triggered: boolean) {
     stateRef.current.ambientParticles = Array.from({ length: 30 }, () => ({
       x: Math.random() * W,
       y: Math.random() * H,
-      vx: (Math.random() - 0.5) * 0.25,           // Deriva horizontal un pelo más dinámica
-      vy: -(Math.random() * 0.4 + 0.2),           // Velocidad de ascenso
-      r: Math.random() * 3.7 + 2.5,               // CAMBIO: Más grandes (de 1.2px a 3.7px)
-      baseAlpha: Math.random() * 0.35 + 0.3,      // CAMBIO: Más opacas (30% a 65% base)
+      vx: (Math.random() - 0.5) * 0.25,           
+      vy: -(Math.random() * 0.4 + 0.2),          
+      r: Math.random() * 3.7 + 2.5,               
+      baseAlpha: Math.random() * 0.35 + 0.3,     
       phase: Math.random() * Math.PI * 2,         
-      phaseSpeed: Math.random() * 1.02 + 1.01,    // Oscilación un poco más viva
-      // CAMBIO: Filtrado estricto de colores para que hagan match real con el branding
+      phaseSpeed: Math.random() * 1.02 + 1.01,    
+      
       color: ['#00FFFF', '#a855f7', '#ffffff'][Math.floor(Math.random() * 3)],
     }));
 
