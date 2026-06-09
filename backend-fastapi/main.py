@@ -97,8 +97,7 @@ origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "https://cosmic-imagination.vercel.app",
-    "https://cosmic-imagination.com",
-    "https://www.cosmic-imagination.com",
+    "https://cosmic-imagination.onrender.com",
     
 ]
 
