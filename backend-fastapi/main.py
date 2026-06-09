@@ -544,7 +544,7 @@ async def submit_contact_form(payload: ContactMessageInput):
         msg.attach(MIMEText(html_body, 'html'))
         
         def send_email_sync():
-            with smtplib.SMTP_SSL('smtp.zoho.com', 465) as server:
+            with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
                 server.login(zoho_user, zoho_password)
                 server.sendmail(zoho_user, zoho_user, msg.as_string())
         

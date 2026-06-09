@@ -618,7 +618,7 @@ export default function CosmicPortal({ isOpen, onClose }: CosmicPortalProps) {
     setContactStatus('sending');
 
     // URL base dinámica idéntica a la del Navbar
-    const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.cosmic-imagination.com';
+    const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://cosmic-imagination.onrender.com';
 
     try {
       const res = await fetch(`${BASE_API_URL}/api/v1/contact`, {
