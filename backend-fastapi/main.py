@@ -544,7 +544,11 @@ async def submit_contact_form(payload: ContactMessageInput):
         msg.attach(MIMEText(html_body, 'html'))
         
         def send_email_sync():
-            with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+            # Cambiamos a SMTP normal en el puerto 587
+            with smtplib.SMTP('smtp.gmail.com', 587) as server:
+                server.ehlo()         # Saludo inicial al servidor
+                server.starttls()     # Cifrado de la conexión (TLS)
+                server.ehlo()         # Segundo saludo con conexión cifrada
                 server.login(zoho_user, zoho_password)
                 server.sendmail(zoho_user, zoho_user, msg.as_string())
         
