@@ -705,7 +705,7 @@ export default function ServicesPage() {
                                   value={formData.name}
                                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                   placeholder="Your name or company"
-                                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-xs text-white placeholder-neutral-700 focus:outline-none focus:border-cyan-500/50 transition-colors"
+                                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-base md:text-xs text-white placeholder-neutral-700 focus:outline-none focus:border-cyan-500/50 transition-colors"
                                 />
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                   <input
@@ -714,14 +714,14 @@ export default function ServicesPage() {
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                     placeholder="your@email.com"
-                                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-xs text-cyan-400 placeholder-neutral-700 focus:outline-none focus:border-cyan-500/50 transition-colors"
+                                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-base md:text-xs text-cyan-400 placeholder-neutral-700 focus:outline-none focus:border-cyan-500/50 transition-colors"
                                   />
                                   <input
                                     type="tel"
                                     value={formData.phone}
                                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                     placeholder="Phone (optional)"
-                                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-xs text-white placeholder-neutral-700 focus:outline-none focus:border-cyan-500/50 transition-colors"
+                                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-base md:text-xs placeholder-neutral-700 focus:outline-none focus:border-cyan-500/50 transition-colors"
                                   />
                                 </div>
                                 <textarea
@@ -730,14 +730,14 @@ export default function ServicesPage() {
                                   value={formData.message}
                                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                                   placeholder="What are you building, and where are you stuck?"
-                                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-xs text-white placeholder-neutral-700 focus:outline-none focus:border-cyan-500/50 transition-colors resize-none"
+                                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-base md:text-xs text-white placeholder-neutral-700 focus:outline-none focus:border-cyan-500/50 transition-colors resize-none"
                                 />
                               </div>
 
                               <button
                                 type="submit"
                                 disabled={contactStatus === 'sending'}
-                                className="w-full py-3.5 bg-cyan-400 text-black font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-cyan-300 disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-md font-mono"
+                                className="w-full py-3.5 bg-cyan-400 text-black font-bold text-base md:text-xs uppercase tracking-widest rounded-xl hover:bg-cyan-300 disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-md font-mono"
                               >
                                 {contactStatus === 'sending' ? (
                                   <>
