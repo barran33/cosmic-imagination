@@ -521,7 +521,7 @@ export default function CosmicArchitect() {
             placeholder="Ej. amor, abundancia, caos y bloqueo..."
             style={{
               width: '100%', background: '#0a0a0a', color: '#cffafe', border: '1px solid #27272a',
-              borderRadius: 10, padding: 12, fontSize: 14, outline: 'none', resize: 'none',
+              borderRadius: 10, padding: 12, fontSize: 16, outline: 'none', resize: 'none',
             }}
           />
 
