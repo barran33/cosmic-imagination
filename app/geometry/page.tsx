@@ -1,445 +1,610 @@
 'use client';
 
-import React, { useState, memo, useRef, useMemo } from 'react';
-import { 
-    Loader2, SlidersHorizontal, CheckCircle, PenTool, Sparkles, 
-    Zap, Flame, Droplets, Compass, Download, Activity, Gauge, Infinity 
+import React, { useState, useRef, useMemo } from 'react';
+import {
+  Sparkles, Download, Loader2, Wand2, Volume2, VolumeX,
+  Gauge, Activity, Flame, Droplets, Compass, Wind,
 } from 'lucide-react';
 
-// --- 1. CONFIGURACIÓN DE ENDPOINT ---
-const API_HOST = process.env.NEXT_PUBLIC_API_URL || 'https://api.cosmic-imagination.com';
-const BASE_API_URL = `${API_HOST}/api/v1/cosmic-architect/transmute`;
+/* ============================================================
+   1. TIPOS
+   ============================================================ */
 
-interface GeometryNode {
+interface GeometryPoint {
   x: number;
   y: number;
 }
 
-interface TransmutationResult {
-  frequency_hz: number;
-  geometry_nodes: GeometryNode[];
-  glow_color: string;
-  secondary_color?: string;
-  elements: string[];
-  alchemy_status: string;
+interface VibrationalEntry {
+  freq: number;
+  pol: 1 | -1;
+  el: string;
 }
 
-// --- 2. SUBCOMPONENTE DE CONTROLES Y TELEMETRÍA ---
-const ParameterPanel = memo(({ 
-    scenePrompt, 
-    setScenePrompt, 
-    isGenerating,
-    result
-}: any) => {
+type VibeCategory = 'DARK_EMOTION' | 'FUN_EMOTION' | 'HARMONIC_LIGHT' | 'CHAOTIC_VOID' | 'SACRED_GEOMETRY';
+type GeometryType = 'fractal_starburst' | 'rose_of_grandi' | 'fermat_spiral' | 'chaotic_glitch' | 'merkaba_matrix';
 
-    const getElementIcon = (element: string) => {
-        switch(element.toLowerCase()) {
-            case 'fuego': return <Flame className="w-3 h-3 text-red-500 mr-1 animate-pulse" />;
-            case 'agua': return <Droplets className="w-3 h-3 text-blue-400 mr-1" />;
-            case 'tierra': return <Compass className="w-3 h-3 text-emerald-600 mr-1" />;
-            default: return <Sparkles className="w-3 h-3 text-cyan-400 mr-1 animate-spin" />;
-        }
-    };
+interface TransmutationResult {
+  frequency: number;
+  nodes: GeometryPoint[];
+  elements: string[];
+  archetype: string;
+  status: string;
+  glowColor: string;
+  secondaryColor: string;
+}
 
-    // --- CÁLCULO DE TELEMETRÍA CUÁNTICA INTERNA ---
-    const telemetry = useMemo(() => {
-        if (!result || !result.geometry_nodes || result.geometry_nodes.length === 0) return null;
-        
-        const nodes = result.geometry_nodes;
-        const totalNodes = nodes.length;
-        const hz = result.frequency_hz || 432;
+/* ============================================================
+   2. MOTOR DE TRANSMUTACIÓN (100% cliente, sin backend)
+   ============================================================ */
 
-        // 1. Simulación determinista de Arquetipo según nodos y resonancia
-        let archetype = "Vórtice Lineal";
-        if (totalNodes % 5 === 0) archetype = "Pentagrama Sagrado";
-        else if (totalNodes % 6 === 0) archetype = "Cubo de Metatrón";
-        else if (totalNodes % 8 === 0) archetype = "Merkaba Activo";
-        else if (hz > 700) archetype = "Vórtice Toroidal";
-        else if (hz > 400) archetype = "Flor de la Vida";
+const VIBRATIONAL_DICT: Record<string, VibrationalEntry> = {
+  miedo: { freq: 174, pol: -1, el: 'tierra' },
+  magia: { freq: 369, pol: -1, el: 'eter' },
+  caos: { freq: 396, pol: -1, el: 'fuego' },
+  bloqueo: { freq: 417, pol: -1, el: 'agua' },
+  amor: { freq: 528, pol: 1, el: 'eter' },
+  abundancia: { freq: 639, pol: 1, el: 'aire' },
+  creacion: { freq: 741, pol: 1, el: 'fuego' },
+  conciencia: { freq: 852, pol: 1, el: 'eter' },
+  iluminacion: { freq: 963, pol: 1, el: 'eter' },
+};
 
-        // 2. Cálculo de Coherencia Área (Simulado estable basado en la dispersión de distancias)
-        let totalDistance = 0;
-        let count = 0;
-        for (let i = 0; i < Math.min(nodes.length, 10); i++) {
-            for (let j = i + 1; j < Math.min(nodes.length, 10); j++) {
-                const dist = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
-                totalDistance += dist;
-                count++;
-            }
-        }
-        const avgDist = count > 0 ? totalDistance / count : 100;
-        const goldenRatioScore = Math.min(99.8, Math.max(74.5, (avgDist % 25) + 75)).toFixed(1);
+const ARCHETYPE_LABELS: Record<GeometryType, string> = {
+  fractal_starburst: 'Estallido Fractal',
+  rose_of_grandi: 'Rosa de Grandi',
+  fermat_spiral: 'Espiral de Fermat',
+  chaotic_glitch: 'Glitch Cuántico',
+  merkaba_matrix: 'Matriz Merkaba',
+};
 
-        // 3. Entropía Dimensional
-        const entropyIndex = ((hz * totalNodes) % 100) / 100;
-        const entropy = Math.min(0.95, Math.max(0.12, entropyIndex)).toFixed(2);
+function round2(n: number): number {
+  return Math.round(n * 100) / 100;
+}
 
-        return { archetype, goldenRatioScore, entropy };
-    }, [result]);
+function hashText(text: string): number {
+  let h = 0;
+  for (let i = 0; i < text.length; i++) h += text.charCodeAt(i) * (i + 1);
+  return h;
+}
 
-    return (
-        <div className="flex flex-col items-start p-4 bg-black/80 border border-cyan-500/30 rounded-xl shadow-[0_0_30px_rgba(6,182,212,0.1)] w-full max-w-2xl backdrop-blur-md transition-all duration-500">
-            
-            <h2 className="text-xs font-semibold text-cyan-400 flex items-center justify-center w-full mb-3 border-b border-cyan-900/60 pb-2 uppercase tracking-widest">
-                <SlidersHorizontal className="w-3 h-3 mr-2 animate-pulse" /> Cosmic Creation Panel
-            </h2>
+function generateGeometry(type: GeometryType, freq: number, nodesCount: number): GeometryPoint[] {
+  const cx = 150, cy = 150, phi = (1 + Math.sqrt(5)) / 2;
+  const baseRadius = 75 + (freq % 30);
+  const pts: GeometryPoint[] = [];
 
-            {/* ÁREA DE INTENCIONES */}
-            <div className="w-full mb-3">
-                <label className="text-[11px] font-bold text-cyan-300 flex items-center mb-1.5 uppercase tracking-wider">
-                    <PenTool className='w-3 h-3 mr-2 text-cyan-400' /> 
-                    Discover the geometric pattern of the word:
-                </label>
-                <textarea
-                    value={scenePrompt}
-                    onChange={(e) => setScenePrompt(e.target.value)}
-                    disabled={isGenerating}
-                    rows={2}
-                    placeholder="Describe what state or block you want to transmute (e.g., Caos y Bloqueo, Abundancia)..."
-                    className="w-full bg-neutral-950 text-cyan-100 border border-cyan-900/60 rounded-lg p-2.5 text-base md:text-xs focus:ring-1 focus:ring-cyan-400 focus:border-transparent transition-all outline-none placeholder:text-zinc-700 shadow-inner resize-none duration-300"
-                />
-            </div>
+  if (type === 'fractal_starburst') {
+    for (let i = 0; i < nodesCount; i++) {
+      const angle = (i * 2 * Math.PI) / nodesCount;
+      const r = baseRadius * (i % 2 === 0 ? 1.2 : 0.45) * (1 + 0.12 * Math.sin(i * phi + freq));
+      pts.push({ x: round2(cx + r * Math.cos(angle)), y: round2(cy + r * Math.sin(angle)) });
+    }
+  } else if (type === 'rose_of_grandi') {
+    const k = Math.max(3, Math.floor((freq % 5) + 3));
+    for (let i = 0; i < nodesCount; i++) {
+      const angle = (i * 2 * Math.PI) / nodesCount;
+      const r = baseRadius * (Math.cos(k * angle) * 0.85 + 0.45);
+      pts.push({ x: round2(cx + r * Math.cos(angle)), y: round2(cy + r * Math.sin(angle)) });
+    }
+  } else if (type === 'fermat_spiral') {
+    for (let i = 0; i < nodesCount; i++) {
+      const theta = i * ((2 * Math.PI) / nodesCount) * phi;
+      let r = Math.sqrt(i + 1) * (baseRadius / Math.sqrt(nodesCount)) * 1.3;
+      r = r * (1 + 0.15 * Math.sin(i * 2.0 + freq));
+      pts.push({ x: round2(cx + r * Math.cos(theta)), y: round2(cy + r * Math.sin(theta)) });
+    }
+  } else if (type === 'chaotic_glitch') {
+    for (let i = 0; i < nodesCount; i++) {
+      const angle = (i * 2 * Math.PI) / nodesCount + Math.cos(freq + i) * 0.25;
+      const r = baseRadius * (0.55 + 0.65 * Math.cos(i * phi + freq * 0.05));
+      pts.push({ x: round2(cx + r * Math.cos(angle)), y: round2(cy + r * Math.sin(angle)) });
+    }
+  } else if (type === 'merkaba_matrix') {
+    const layers = [0.45, 0.75, 1.1];
+    const nodesPerLayer = Math.max(Math.floor(nodesCount / layers.length), 4);
+    layers.forEach((scale, lIdx) => {
+      const currentRadius = baseRadius * scale;
+      const offset = (lIdx * Math.PI / nodesPerLayer) * phi;
+      for (let i = 0; i < nodesPerLayer; i++) {
+        const angle = (i * 2 * Math.PI) / nodesPerLayer + offset;
+        const r = currentRadius * (1 + 0.08 * Math.cos(i * phi + freq));
+        pts.push({ x: round2(cx + r * Math.cos(angle)), y: round2(cy + r * Math.sin(angle)) });
+      }
+    });
+  }
+  return pts;
+}
 
-            {/* STATUS EN TIEMPO REAL */}
-            {result && (
-                <div className="w-full space-y-2 animate-fadeIn">
-                    <div className="w-full grid grid-cols-3 gap-2 p-2.5 bg-neutral-950/60 border border-neutral-900 rounded-lg text-[10px] items-center">
-                        <div className="flex flex-col border-r border-neutral-800/80">
-                            <span className="text-neutral-500 uppercase font-medium tracking-mono">Status</span>
-                            <span className="text-emerald-400 font-bold tracking-wide truncate flex items-center gap-1 mt-0.5">
-                                <CheckCircle className="w-2.5 h-2.5 animate-bounce" /> Transmuted
-                            </span>
-                        </div>
-                        <div className="flex flex-col border-r border-neutral-800/80 pl-2">
-                            <span className="text-neutral-500 uppercase font-medium tracking-mono">Resonance</span>
-                            <span className="text-white font-mono font-bold tracking-widest mt-0.5">{result.frequency_hz} Hz</span>
-                        </div>
-                        <div className="flex flex-col pl-2">
-                            <span className="text-neutral-500 uppercase font-medium tracking-mono">Elements</span>
-                            <span className="text-cyan-400 font-semibold font-mono uppercase tracking-tighter truncate flex items-center mt-0.5">
-                                {result.elements.map((el: string) => (
-                                    <span key={el} className="flex items-center mr-1">
-                                        {getElementIcon(el)}{el}
-                                    </span>
-                                ))}
-                            </span>
-                        </div>
-                    </div>
+function hslToHex(h: number, s: number, l: number): string {
+  const q = (p: number, qq: number, t: number): number => {
+    if (t < 0) t += 1;
+    if (t > 1) t -= 1;
+    if (t < 1 / 6) return p + (qq - p) * 6 * t;
+    if (t < 1 / 2) return qq;
+    if (t < 2 / 3) return p + (qq - p) * (2 / 3 - t) * 6;
+    return p;
+  };
+  const _q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+  const _p = 2 * l - _q;
+  const toHex = (v: number): string => Math.round(Math.max(0, Math.min(1, v)) * 255).toString(16).padStart(2, '0');
+  return `#${toHex(q(_p, _q, h + 1 / 3))}${toHex(q(_p, _q, h))}${toHex(q(_p, _q, h - 1 / 3))}`;
+}
 
-                    {/* NUEVO PANEL: TELEMETRÍA DE LA MATRIZ */}
-                    {telemetry && (
-                        <div className="w-full grid grid-cols-3 gap-2 p-2.5 bg-neutral-950/30 border border-cyan-950/40 rounded-lg text-[9px] items-center text-zinc-400 font-mono">
-                            <div className="flex items-center gap-1.5 border-r border-neutral-900/80 pr-1 truncate">
-                                <Infinity className="w-3 h-3 text-cyan-500/70" />
-                                <div className="flex flex-col truncate">
-                                    <span className="text-zinc-600 uppercase text-[8px]">Archetype</span>
-                                    <span className="text-cyan-300/90 font-medium truncate">{telemetry.archetype}</span>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-1.5 border-r border-neutral-900/80 pl-1">
-                                <Gauge className="w-3 h-3 text-indigo-400/70" />
-                                <div className="flex flex-col">
-                                    <span className="text-zinc-600 uppercase text-[8px]">Golden Ratio</span>
-                                    <span className="text-indigo-300 font-bold">{telemetry.goldenRatioScore}%</span>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-1.5 pl-1">
-                                <Activity className="w-3 h-3 text-purple-400/70" />
-                                <div className="flex flex-col">
-                                    <span className="text-zinc-600 uppercase text-[8px]">Entropy Δ</span>
-                                    <span className="text-purple-300 font-bold">{telemetry.entropy}</span>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
+function colorProfile(text: string, vibe: VibeCategory): [string, string] {
+  const hash = hashText(text.toLowerCase());
+  let hue: number, sat: number, light: number;
+  if (vibe === 'DARK_EMOTION') {
+    hue = (hash % 20) + (hash % 2 === 0 ? 340 : 0);
+    sat = 90 + (hash % 11); light = 40 + (hash % 15);
+  } else if (vibe === 'FUN_EMOTION') {
+    hue = hash % 2 === 0 ? (hash % 60) + 180 : (hash % 40) + 40;
+    sat = 95 + (hash % 6); light = 50 + (hash % 10);
+  } else if (vibe === 'CHAOTIC_VOID') {
+    hue = (hash % 50) + 270; sat = 85 + (hash % 15); light = 45 + (hash % 10);
+  } else if (vibe === 'HARMONIC_LIGHT') {
+    hue = (hash % 30) + 45; sat = 80 + (hash % 21); light = 75 + (hash % 15);
+  } else {
+    hue = (hash % 50) + 160; sat = 90 + (hash % 11); light = 50 + (hash % 10);
+  }
+  const primary = hslToHex(hue / 360, sat / 100, light / 100);
+  const secondary = hslToHex(((hue / 360) + 0.15) % 1, sat / 100, Math.max(0.3, light / 100 - 0.1));
+  return [primary, secondary];
+}
+
+function transmuteEnergy(text: string): TransmutationResult {
+  const lower = text.toLowerCase();
+  let freq = 432, nodes = 12, matched = 0;
+  const elements: string[] = [];
+
+  Object.entries(VIBRATIONAL_DICT).forEach(([word, data]) => {
+    if (lower.includes(word)) {
+      matched++;
+      if (data.pol === -1) { freq += data.freq * 0.5; nodes += 4; }
+      else { freq += data.freq; nodes += 6; }
+      if (!elements.includes(data.el)) elements.push(data.el);
+    }
+  });
+
+  if (matched === 0) {
+    const hash = hashText(lower);
+    freq = 432 + (hash % 531);
+    nodes = 12 + (hash % 12);
+  }
+
+  nodes = Math.min(Math.max(nodes, 12), 36);
+  if (nodes % 2 !== 0) nodes += 1;
+  freq = Math.round(freq * 10) / 10;
+
+  const darkKw = ['dolor', 'ira', 'miedo', 'muerte', 'tristeza', 'odio', 'caos', 'sufrimiento', 'oscuridad', 'bloqueo'];
+  const funKw = ['magia', 'musica', 'baile', 'risa', 'fiesta', 'alegria', 'ritmo', 'flow', 'fuego'];
+  const lightKw = ['amor', 'paz', 'luz', 'iluminacion', 'conciencia', 'abundancia', 'divino', 'creacion'];
+  const voidKw = ['vacio', 'nada', 'abismo', 'quantum', 'singularidad', 'entropia'];
+
+  let vibe: VibeCategory, geometryType: GeometryType, status: string;
+  if (darkKw.some((k) => lower.includes(k))) {
+    vibe = 'DARK_EMOTION'; geometryType = freq % 2 === 0 ? 'fractal_starburst' : 'chaotic_glitch';
+    status = 'Calcinación: transmutando densidad en luz';
+  } else if (funKw.some((k) => lower.includes(k))) {
+    vibe = 'FUN_EMOTION'; geometryType = freq % 2 === 0 ? 'rose_of_grandi' : 'fractal_starburst';
+    status = 'Ritmo cósmico elevando el pulso creativo';
+  } else if (lightKw.some((k) => lower.includes(k))) {
+    vibe = 'HARMONIC_LIGHT'; geometryType = 'fermat_spiral';
+    status = 'Crisopeya pura: espectro áureo revelado';
+  } else if (voidKw.some((k) => lower.includes(k))) {
+    vibe = 'CHAOTIC_VOID'; geometryType = 'chaotic_glitch';
+    status = 'Inversión espacio-tiempo en la matriz';
+  } else {
+    vibe = 'SACRED_GEOMETRY'; geometryType = 'merkaba_matrix';
+    status = 'Estructuras vectoriales alineadas';
+  }
+
+  const nodesPoints = generateGeometry(geometryType, freq, nodes);
+  const [glowColor, secondaryColor] = colorProfile(text, vibe);
+
+  return {
+    frequency: freq,
+    nodes: nodesPoints,
+    elements: elements.length ? elements : ['éter'],
+    archetype: ARCHETYPE_LABELS[geometryType],
+    status,
+    glowColor,
+    secondaryColor,
+  };
+}
+
+function elementIcon(el: string): React.ReactNode {
+  const style = { width: 11, height: 11, marginRight: 4 };
+  
+  switch (el) {
+    case 'fuego': return <Flame style={{ ...style, color: '#f87171' }} />;
+    case 'agua': return <Droplets style={{ ...style, color: '#60a5fa' }} />;
+    case 'tierra': return <Compass style={{ ...style, color: '#34d399' }} />;
+    case 'aire': return <Wind style={{ ...style, color: '#a5b4fc' }} />;
+    default: return <Sparkles style={{ ...style, color: '#22d3ee' }} />;
+  }
+}
+
+/* ============================================================
+   3. RENDER DEL MANDALA (SVG interactivo)
+   ============================================================ */
+
+interface MandalaProps {
+  result: TransmutationResult;
+  glow: string;
+  glow2: string;
+  pulsed: number | null;
+  onPulse: (i: number) => void;
+}
+
+function Mandala({ result, glow, glow2, pulsed, onPulse }: MandalaProps) {
+  const nodes = result.nodes;
+  const total = nodes.length;
+  const freq = result.frequency;
+  const step2 = Math.max(2, Math.floor((freq % 4) + 2));
+  const step3 = Math.max(5, Math.floor(total / 2));
+
+  return (
+    <>
+      {nodes.map((p, i) => {
+        const p1 = nodes[(i + 1) % total];
+        const p2 = nodes[(i + step2) % total];
+        const p3 = nodes[(i + step3) % total];
+        return (
+          <g key={i}>
+            {p1 && <line x1={p.x} y1={p.y} x2={p1.x} y2={p1.y} stroke={glow} strokeWidth="1.3" opacity="0.85" filter="url(#glow-heavy)" />}
+            {p2 && (
+              <line x1={p.x} y1={p.y} x2={p2.x} y2={p2.y} stroke={glow2} strokeWidth="0.8" opacity="0.55"
+                strokeDasharray={freq % 2 === 0 ? 'none' : '4,3'} filter="url(#glow-light)" />
             )}
-        </div>
-    );
-});
+            {p3 && <line x1={p.x} y1={p.y} x2={p3.x} y2={p3.y} stroke={glow} strokeWidth="0.5" opacity="0.3" strokeDasharray="2,6" />}
+            {pulsed === i && (
+              <circle cx={p.x} cy={p.y} r="4" fill="none" stroke={glow} strokeWidth="1" style={{ animation: 'ripple .6s ease-out forwards' }} />
+            )}
+            <circle
+              cx={p.x} cy={p.y} r={i % 2 === 0 ? 3.2 : 1.8}
+              fill="#fff" stroke={glow} strokeWidth="1.3" filter="url(#glow-heavy)"
+              style={{ cursor: 'pointer' }}
+              onClick={(e) => { e.stopPropagation(); onPulse(i); }}
+            />
+          </g>
+        );
+      })}
+    </>
+  );
+}
 
-ParameterPanel.displayName = 'ParameterPanel';
+/* ============================================================
+   4. COMPONENTE PRINCIPAL
+   ============================================================ */
 
-// --- 3. COMPONENTE PRINCIPAL: MOTOR DE RED REESTRUCTURADO ---
-export default function DeepDreamEngine() { 
-    const [isGenerating, setIsGenerating] = useState(false);
-    const [scenePrompt, setScenePrompt] = useState('');
-    const [result, setResult] = useState<TransmutationResult | null>(null);
-    
-    // Referencia al elemento SVG para permitir la extracción del vector
-    const svgRef = useRef<SVGSVGElement>(null);
+export default function CosmicArchitect() {
+  const [prompt, setPrompt] = useState<string>('');
+  const [isChanneling, setIsChanneling] = useState<boolean>(false);
+  const [result, setResult] = useState<TransmutationResult | null>(null);
+  const [soundOn, setSoundOn] = useState<boolean>(true);
+  const [tilt, setTilt] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [pulsed, setPulsed] = useState<number | null>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-    const handleTransmutation = async () => {
-        if (!scenePrompt.trim()) return;
+  const stars = useMemo(
+    () => Array.from({ length: 90 }, (_, i) => ({
+      id: i,
+      top: Math.random() * 100,
+      left: Math.random() * 100,
+      size: Math.random() * 2 + 0.6,
+      delay: Math.random() * 4,
+      duration: Math.random() * 3 + 2.5,
+    })),
+    []
+  );
 
-        setIsGenerating(true);
-        try {
-            const response = await fetch(BASE_API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: scenePrompt }),
-            });
+  const playChime = async (freq: number): Promise<void> => {
+    try {
+      // Se tipa como `any`: los tipos genéricos de Tone.js para PolySynth
+      // son más estrictos de lo que necesitamos aquí para un simple acorde.
+      const Tone: any = await import('tone');
+      await Tone.start();
+      const reverb = new Tone.Reverb({ decay: 3, wet: 0.4 }).toDestination();
+      const synth = new Tone.PolySynth(Tone.Synth, {
+        oscillator: { type: 'sine' },
+        envelope: { attack: 0.4, decay: 0.3, sustain: 0.2, release: 1.8 },
+      }).connect(reverb);
+      const clamped = Math.max(180, Math.min(900, freq));
+      synth.triggerAttackRelease([clamped, clamped * 1.5], '2n');
+    } catch (e) {
+      console.warn('Audio no disponible en este navegador.', e);
+    }
+  };
 
-            if (!response.ok) throw new Error(`Quantum disruption: ${response.status}`);
-            
-            const data = await response.json();
-            setResult(data);
-        } catch (error) {
-            console.error("Error collapsing wave function:", error);
-        } finally {
-            setIsGenerating(false);
+  const handleTransmute = (): void => {
+    if (!prompt.trim()) return;
+    setIsChanneling(true);
+    setResult(null);
+    window.setTimeout(() => {
+      const output = transmuteEnergy(prompt);
+      setResult(output);
+      setIsChanneling(false);
+      if (soundOn) void playChime(output.frequency);
+    }, 750);
+  };
+
+  const handlePulse = (i: number): void => {
+    setPulsed(i);
+    window.setTimeout(() => setPulsed(null), 600);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>): void => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const rx = ((e.clientY - rect.top) / rect.height - 0.5) * -10;
+    const ry = ((e.clientX - rect.left) / rect.width - 0.5) * 10;
+    setTilt({ x: rx, y: ry });
+  };
+
+  const telemetry = useMemo(() => {
+    if (!result) return null;
+    const nodes = result.nodes;
+    let totalDist = 0, count = 0;
+    for (let i = 0; i < Math.min(nodes.length, 10); i++) {
+      for (let j = i + 1; j < Math.min(nodes.length, 10); j++) {
+        totalDist += Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
+        count++;
+      }
+    }
+    const avg = count ? totalDist / count : 100;
+    const coherence = Math.min(99.8, Math.max(74.5, (avg % 25) + 75)).toFixed(1);
+    const entropy = Math.min(0.95, Math.max(0.12, ((result.frequency * nodes.length) % 100) / 100)).toFixed(2);
+    return { coherence, entropy };
+  }, [result]);
+
+  const downloadSVG = (): void => {
+    if (!svgRef.current || !result) return;
+    const clone = svgRef.current.cloneNode(true) as SVGSVGElement;
+    clone.removeAttribute('class');
+    clone.setAttribute('width', '800');
+    clone.setAttribute('height', '800');
+    clone.style.background = '#030303';
+    const str = new XMLSerializer().serializeToString(clone);
+    const blob = new Blob([str], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `cosmic_${(prompt || 'blueprint').toLowerCase().replace(/[^a-z0-9]/g, '_')}.svg`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const glow = result?.glowColor || '#22d3ee';
+  const glow2 = result?.secondaryColor || '#818cf8';
+
+  return (
+    <div
+      style={{
+        position: 'relative', minHeight: '100vh', width: '100%', overflow: 'hidden',
+        background: 'radial-gradient(ellipse at 50% 0%, #0b1026 0%, #030303 60%)',
+        color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 24,
+        fontFamily: 'ui-sans-serif, system-ui, sans-serif',
+      }}
+    >
+      <style>{`
+        @keyframes twinkle { 0%, 100% { opacity: .2; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.3); } }
+        @keyframes driftA { 0% { transform: translate(0,0); } 50% { transform: translate(30px,-20px); } 100% { transform: translate(0,0); } }
+        @keyframes driftB { 0% { transform: translate(0,0); } 50% { transform: translate(-25px,25px); } 100% { transform: translate(0,0); } }
+        @keyframes ripple { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(2.6); opacity: 0; } }
+        @keyframes slowspin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes orbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @media (prefers-reduced-motion: reduce) {
+          * { animation: none !important; transition: none !important; }
         }
-    };
+      `}</style>
 
-    // --- FUNCIÓN NATIVA DE DESCARGA VECTORIAL SVG ---
-    const downloadMatrixSVG = () => {
-        if (!svgRef.current || !result) return;
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+        {stars.map((s) => (
+          <div key={s.id} style={{
+            position: 'absolute', top: `${s.top}%`, left: `${s.left}%`,
+            width: s.size, height: s.size, borderRadius: '9999px', background: '#fff',
+            animation: `twinkle ${s.duration}s ease-in-out ${s.delay}s infinite`,
+          }} />
+        ))}
+      </div>
 
-        try {
-            const svgElement = svgRef.current;
-            // Se clona el elemento para no romper el renderizado activo en el DOM
-            const clonedSvg = svgElement.cloneNode(true) as SVGSVGElement;
-            
-            // Remover clases de animación de rotación infinita para que el diseño quede estático al importarse en Illustrator/Figma
-            clonedSvg.removeAttribute('class');
-            clonedSvg.setAttribute('width', '800');
-            clonedSvg.setAttribute('height', '800');
-            clonedSvg.setAttribute('viewBox', '0 0 300 300');
-            clonedSvg.style.background = '#030303';
+      <div style={{
+        position: 'absolute', width: 380, height: 380, top: '8%', left: '4%', borderRadius: '9999px',
+        background: glow, opacity: 0.22, filter: 'blur(90px)', animation: 'driftA 14s ease-in-out infinite',
+        transition: 'background 1s ease',
+      }} />
+      <div style={{
+        position: 'absolute', width: 340, height: 340, bottom: '4%', right: '6%', borderRadius: '9999px',
+        background: glow2, opacity: 0.16, filter: 'blur(90px)', animation: 'driftB 18s ease-in-out infinite',
+        transition: 'background 1s ease',
+      }} />
 
-            const svgString = new XMLSerializer().serializeToString(clonedSvg);
-            const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            
-            const downloadLink = document.createElement('a');
-            const sanitizedName = scenePrompt.trim().toLowerCase().replace(/[^a-z0-9]/g, '_');
-            downloadLink.href = url;
-            downloadLink.download = `cosmic_matrix_${sanitizedName || 'blueprint'}.svg`;
-            
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-            URL.revokeObjectURL(url);
-        } catch (err) {
-            console.error("Failed to extract vector matrix:", err);
-        }
-    };
+      <header style={{ textAlign: 'center', marginBottom: 24, position: 'relative', zIndex: 10 }}>
+        <h1 style={{
+          fontSize: 24, fontWeight: 900, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em',
+          color: glow, textShadow: `0 0 18px ${glow}80`, transition: 'color .6s ease',
+        }}>
+          🌌 Cosmic Architect ✨
+        </h1>
+        <p style={{ fontSize: 11, color: '#71717a', letterSpacing: '0.25em', textTransform: 'uppercase', fontFamily: 'monospace' }}>
+          Oráculo de Geometría Sagrada
+        </p>
+      </header>
 
-    const renderMandalaLayers = () => {
-        if (!result || !result.geometry_nodes.length) return null;
+      <div
+        ref={containerRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={() => setTilt({ x: 0, y: 0 })}
+        style={{ position: 'relative', zIndex: 10, display: 'flex', justifyContent: 'center', marginBottom: 24, perspective: 900 }}
+      >
+        <div style={{
+          position: 'relative', width: 480, height: 420, maxWidth: '92vw',
+          background: 'rgba(0,0,0,0.6)', borderRadius: 16, border: '1px solid #27272a',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16,
+          backdropFilter: 'blur(4px)', boxShadow: `0 0 60px ${glow}25`,
+          transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+          transition: 'transform .25s ease-out, box-shadow .6s ease',
+        }}>
+          {result && (
+            <button
+              onClick={downloadSVG}
+              title="Descargar como SVG"
+              style={{
+                position: 'absolute', top: 12, right: 12, padding: 8, borderRadius: 8, zIndex: 20,
+                background: 'rgba(0,0,0,0.7)', border: '1px solid #27272a', cursor: 'pointer',
+              }}
+            >
+              <Download style={{ width: 14, height: 14, color: '#a1a1aa' }} />
+            </button>
+          )}
 
-        const nodes = result.geometry_nodes;
-        const total = nodes.length;
-        const hz = result.frequency_hz || 432;
-        const activeColor = result.glow_color || "#22d3ee";
-        const fallbackSecondary = result.secondary_color || activeColor;
-
-        const step1 = 1;
-        const step2 = Math.max(2, Math.floor((hz % 4) + 2)); 
-        const step3 = Math.max(5, Math.floor(total / 2)); 
-
-        return nodes.map((point, index) => {
-            const rx = point.x;
-            const ry = point.y;
-
-            const p1 = nodes[(index + step1) % total];
-            const p2 = nodes[(index + step2) % total];
-            const p3 = nodes[(index + step3) % total];
-
-            return (
-                <g key={`mandala-vertex-${index}`} className="transition-all duration-700 ease-in-out">
-                    {/* Capa de Red 1 */}
-                    {p1 && (
-                        <line
-                            x1={rx} y1={ry} x2={p1.x} y2={p1.y}
-                            stroke={activeColor}
-                            strokeWidth="1.4"
-                            opacity="0.9"
-                            style={{ filter: 'url(#cosmic-glow-heavy)' }}
-                        />
-                    )}
-                    
-                    {/* Capa de Red 2 */}
-                    {p2 && (
-                        <>
-                            <line
-                                x1={rx} y1={ry} x2={p2.x} y2={p2.y}
-                                stroke={fallbackSecondary}
-                                strokeWidth="0.8"
-                                opacity="0.6"
-                                strokeDasharray={hz % 2 === 0 ? "none" : "4,3"}
-                                style={{ filter: 'url(#cosmic-glow-light)' }}
-                            />
-                            {index % 3 === 0 && (
-                                <circle r="1.5" fill="#ffffff">
-                                    <animateMotion 
-                                        dur={`${(hz % 5) + 3}s`} 
-                                        repeatCount="indefinite"
-                                        path={`M ${rx} ${ry} L ${p2.x} ${p2.y}`} 
-                                    />
-                                </circle>
-                            )}
-                        </>
-                    )}
-
-                    {/* Capa de Red 3 */}
-                    {p3 && (
-                        <line
-                            x1={rx} y1={ry} x2={p3.x} y2={p3.y}
-                            stroke={activeColor}
-                            strokeWidth="0.5"
-                            opacity="0.35"
-                            strokeDasharray="2,6"
-                        />
-                    )}
-                    
-                    {/* Nodos de Conciencia */}
-                    <circle
-                        cx={rx}
-                        cy={ry}
-                        r={index % 2 === 0 ? "3.5" : "2"}
-                        fill="#ffffff"
-                        stroke={activeColor}
-                        strokeWidth="1.5"
-                        className="animate-pulse"
-                        style={{ 
-                            filter: 'url(#cosmic-glow-heavy)',
-                            transformOrigin: `${rx}px ${ry}px`
-                        }}
-                    />
-                    <circle cx={rx} cy={ry} r="1" fill="#ffffff" />
-                </g>
-            );
-        });
-    };
-
-    return (
-        <div className="flex flex-col items-center min-h-screen bg-[#030303] text-white p-6 font-sans selection:bg-cyan-500/30 overflow-x-hidden">
-            
-            <header className="text-center mb-6 relative">
-                <div className="absolute -inset-x-20 top-0 h-px bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent blur-sm"></div>
-                <h1 className="text-2xl font-black text-cyan-400 mb-1 drop-shadow-[0_0_12px_rgba(34,211,238,0.6)] tracking-wide uppercase">
-                    🌌 Cosmic Architect ✨⚛️✨
-                </h1>
-                <p className="text-[9px] text-zinc-500 tracking-[0.25em] uppercase font-mono">
-                    Quantum Sacred Geometry Engine
-                </p>
-            </header>
-
-            {/* CANVAS AREA */}
-            <div className="w-full flex justify-center mb-5">
-                <div className="relative group max-w-full">
-                    <div 
-                        className="absolute -inset-2 rounded-2xl blur-2xl opacity-10 group-hover:opacity-20 transition duration-1000"
-                        style={{ 
-                            background: result ? `radial-gradient(circle, ${result.glow_color} 0%, transparent 70%)` : 'radial-gradient(circle, #0891b2 0%, transparent 70%)' 
-                        }}
-                    ></div>
-                    
-                    <div 
-                        className="relative bg-black/90 rounded-xl border border-zinc-800/60 shadow-[0_0_50px_rgba(0,0,0,0.8)] flex items-center justify-center p-4"
-                        style={{ width: '500px', height: '380px', maxWidth: '95vw', maxHeight: '45vh' }}
-                    >
-                        {result ? (
-                            <div className="flex flex-col items-center justify-center w-full h-full relative">
-                                {/* BOTÓN FLOTANTE PARA DESCARGA DIRECTA DE VECTOR */}
-                                <button
-                                    onClick={downloadMatrixSVG}
-                                    title="Extract Matrix Blueprint (SVG)"
-                                    className="absolute top-2 right-2 p-2 rounded-lg bg-neutral-950/80 border border-neutral-800/80 text-zinc-400 hover:text-cyan-400 hover:border-cyan-500/40 transition-all z-10 backdrop-blur-sm group/btn"
-                                >
-                                    <Download className="w-3.5 h-3.5 group-hover/btn:scale-110 transition-transform" />
-                                </button>
-
-                                <svg 
-                                    ref={svgRef}
-                                    width="100%" 
-                                    height="100%" 
-                                    viewBox="0 0 300 300" 
-                                    className="animate-[spin_26s_linear_infinite]"
-                                    style={{ willChange: 'transform' }}
-                                >
-                                    <defs>
-                                        <filter id="cosmic-glow-heavy" x="-40%" y="-40%" width="180%" height="180%">
-                                            <feGaussianBlur stdDeviation="4" result="blur1" />
-                                            <feGaussianBlur stdDeviation="1.5" result="blur2" />
-                                            <feMerge>
-                                                <feMergeNode in="blur1" />
-                                                <feMergeNode in="blur2" />
-                                                <feMergeNode in="SourceGraphic" />
-                                            </feMerge>
-                                        </filter>
-
-                                        <filter id="cosmic-glow-light" x="-20%" y="-20%" width="140%" height="140%">
-                                            <feGaussianBlur stdDeviation="1" result="blur" />
-                                            <feMerge>
-                                                <feMergeNode in="blur" />
-                                                <feMergeNode in="SourceGraphic" />
-                                            </feMerge>
-                                        </filter>
-                                    </defs>
-
-                                    {renderMandalaLayers()}
-                                </svg>
-                                
-                                <span 
-                                    className="absolute bottom-2 text-[8px] tracking-[0.25em] uppercase font-mono px-3 py-1 bg-neutral-950/80 border border-neutral-900 rounded-full shadow-md backdrop-blur-sm max-w-[85%] truncate transition-all duration-300"
-                                    style={{ color: result.glow_color, textShadow: `0 0 8px ${result.glow_color}40` }}
-                                >
-                                    {result.alchemy_status || 'Resonant Blueprint Active'}
-                                </span>
-                            </div>
-                        ) : (
-                            <div className="text-center p-6 space-y-4">
-                                <div className="w-12 h-12 rounded-full border border-cyan-500/20 flex items-center justify-center mx-auto animate-pulse bg-cyan-950/20 shadow-[0_0_15px_rgba(6,182,212,0.1)]">
-                                    <Zap className="w-5 h-5 text-cyan-400 animate-bounce" />
-                                </div>
-                                <p className="text-[10px] text-zinc-500 tracking-[0.15em] uppercase font-mono max-w-xs">
-                                    Waiting for wave function collapse...
-                                </p>
-                            </div>
-                        )}
-                    </div>
-                </div>
+          {isChanneling ? (
+            <div style={{ textAlign: 'center' }}>
+              <Loader2 style={{ width: 32, height: 32, margin: '0 auto 12px', color: glow, animation: 'spin 1s linear infinite' }} />
+              <p style={{ fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', fontFamily: 'monospace', color: '#a1a1aa' }}>
+                Canalizando frecuencia...
+              </p>
             </div>
+          ) : result ? (
+            <svg ref={svgRef} viewBox="0 0 300 300" width="100%" height="100%" style={{ animation: 'slowspin 50s linear infinite' }}>
+              <defs>
+                <filter id="glow-heavy" x="-40%" y="-40%" width="180%" height="180%">
+                  <feGaussianBlur stdDeviation="4" result="b1" />
+                  <feGaussianBlur stdDeviation="1.5" result="b2" />
+                  <feMerge><feMergeNode in="b1" /><feMergeNode in="b2" /><feMergeNode in="SourceGraphic" /></feMerge>
+                </filter>
+                <filter id="glow-light" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="1" result="b" />
+                  <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+                </filter>
+              </defs>
 
-            {/* CONTROLS AREA */}
-            <div className="w-full max-w-2xl space-y-4 flex flex-col items-center">
-                
-                <ParameterPanel 
-                    scenePrompt={scenePrompt}
-                    setScenePrompt={setScenePrompt}
-                    isGenerating={isGenerating}
-                    result={result}
-                />
+              <circle cx="150" cy="150" r="140" fill="none" stroke={glow} strokeOpacity="0.15" strokeDasharray="2,6" />
+              <g style={{ transformOrigin: '150px 150px', animation: 'orbit 22s linear infinite' }}>
+                <circle cx="150" cy="10" r="2.6" fill={glow2} />
+              </g>
+              <g style={{ transformOrigin: '150px 150px', animation: 'orbit 32s linear infinite reverse' }}>
+                <circle cx="150" cy="18" r="2" fill={glow} />
+              </g>
 
-                <div className="w-full max-w-2xl flex gap-3">
-                    <button
-                        onClick={handleTransmutation}
-                        disabled={!scenePrompt.trim() || isGenerating}
-                        style={{
-                            boxShadow: (!scenePrompt.trim() || isGenerating) ? 'none' : `0 0 20px ${(result?.glow_color || '#06b6d4')}30`
-                        }}
-                        className={`flex-1 py-3 rounded-lg font-bold uppercase tracking-widest text-xs transition-all duration-300 flex items-center justify-center gap-2 relative overflow-hidden group
-                            ${isGenerating 
-                                ? 'bg-zinc-950 text-cyan-400 border border-cyan-500/20 shadow-inner cursor-not-allowed' 
-                                : 'bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 text-white hover:scale-[1.01] active:scale-[0.99] disabled:opacity-20 shadow-md'
-                            }`}
-                    >
-                        {isGenerating ? (
-                            <> 
-                                <Loader2 className="w-3.5 h-3.5 animate-spin text-cyan-400" /> 
-                                <span className="animate-pulse">Transmuting Matrix...</span> 
-                            </>
-                        ) : (
-                            <> 
-                                <Sparkles className="w-3.5 h-3.5 text-cyan-200 group-hover:rotate-12 transition-transform" /> 
-                                <span>Transmute Energy ✨</span> 
-                            </>
-                        )}
-                    </button>
-                </div>
+              <Mandala result={result} glow={glow} glow2={glow2} pulsed={pulsed} onPulse={handlePulse} />
+            </svg>
+          ) : (
+            <div style={{ textAlign: 'center', padding: 24 }}>
+              <Wand2 style={{ width: 30, height: 30, margin: '0 auto 12px', color: '#22d3ee' }} />
+              <p style={{ fontSize: 11, color: '#71717a', letterSpacing: '0.15em', textTransform: 'uppercase', fontFamily: 'monospace', maxWidth: 260 }}>
+                Escribe una palabra o intención para revelar su geometría
+              </p>
             </div>
+          )}
         </div>
-    );
+      </div>
+
+      <div style={{ position: 'relative', zIndex: 10, width: '100%', maxWidth: 560, display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{
+          background: 'rgba(0,0,0,0.7)', border: '1px solid #27272a', borderRadius: 14, padding: 16, backdropFilter: 'blur(6px)',
+        }}>
+          <label style={{
+            fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em',
+            display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, color: glow, transition: 'color .6s ease',
+          }}>
+            <Sparkles style={{ width: 14, height: 14 }} /> Descubre el patrón de tu intención
+          </label>
+          <textarea
+            value={prompt}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPrompt(e.target.value)}
+            disabled={isChanneling}
+            rows={2}
+            placeholder="Ej. amor, abundancia, caos y bloqueo..."
+            style={{
+              width: '100%', background: '#0a0a0a', color: '#cffafe', border: '1px solid #27272a',
+              borderRadius: 10, padding: 12, fontSize: 14, outline: 'none', resize: 'none',
+            }}
+          />
+
+          {result && (
+            <div style={{
+              display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 12, padding: 12,
+              background: 'rgba(0,0,0,0.4)', border: '1px solid #18181b', borderRadius: 10, fontSize: 10,
+            }}>
+              <div style={{ display: 'flex', flexDirection: 'column', borderRight: '1px solid #27272a', paddingRight: 8 }}>
+                <span style={{ color: '#71717a', textTransform: 'uppercase' }}>Arquetipo</span>
+                <span style={{ fontWeight: 600, color: glow, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{result.archetype}</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', borderRight: '1px solid #27272a', padding: '0 8px' }}>
+                <span style={{ color: '#71717a', textTransform: 'uppercase' }}>Resonancia</span>
+                <span style={{ fontFamily: 'monospace', fontWeight: 700 }}>{result.frequency} Hz</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', paddingLeft: 8 }}>
+                <span style={{ color: '#71717a', textTransform: 'uppercase' }}>Elementos</span>
+                <span style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', fontWeight: 600 }}>
+                  {result.elements.map((el) => (
+                    <span key={el} style={{ display: 'flex', alignItems: 'center', marginRight: 4 }}>
+                      {elementIcon(el)}{el}
+                    </span>
+                  ))}
+                </span>
+              </div>
+
+              {telemetry && (
+                <div style={{
+                  gridColumn: '1 / -1', borderTop: '1px solid #18181b', marginTop: 4, paddingTop: 8,
+                  display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8,
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Gauge style={{ width: 12, height: 12, color: '#818cf8' }} />
+                    <span style={{ color: '#a1a1aa' }}>Golden Ratio: <b style={{ color: '#c7d2fe' }}>{telemetry.coherence}%</b></span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Activity style={{ width: 12, height: 12, color: '#c084fc' }} />
+                    <span style={{ color: '#a1a1aa' }}>Entropía: <b style={{ color: '#e9d5ff' }}>{telemetry.entropy}</b></span>
+                  </div>
+                </div>
+              )}
+
+              <div style={{
+                gridColumn: '1 / -1', textAlign: 'center', marginTop: 8, paddingTop: 8, borderTop: '1px solid #18181b',
+                fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: glow,
+              }}>
+                {result.status}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            onClick={handleTransmute}
+            disabled={!prompt.trim() || isChanneling}
+            style={{
+              flex: 1, padding: '12px 0', borderRadius: 10, fontWeight: 700, textTransform: 'uppercase',
+              letterSpacing: '0.15em', fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              border: 'none', cursor: (!prompt.trim() || isChanneling) ? 'not-allowed' : 'pointer',
+              background: (!prompt.trim() || isChanneling) ? '#18181b' : `linear-gradient(90deg, ${glow}, ${glow2})`,
+              color: (!prompt.trim() || isChanneling) ? '#52525b' : '#fff',
+              transition: 'background .4s ease',
+            }}
+          >
+            {isChanneling ? (
+              <><Loader2 style={{ width: 15, height: 15, animation: 'spin 1s linear infinite' }} /> Transmutando...</>
+            ) : (
+              <><Sparkles style={{ width: 15, height: 15 }} /> Transmutar Energía</>
+            )}
+          </button>
+          <button
+            onClick={() => setSoundOn((s) => !s)}
+            title={soundOn ? 'Silenciar' : 'Activar sonido'}
+            style={{
+              padding: '0 14px', borderRadius: 10, background: 'rgba(0,0,0,0.7)', border: '1px solid #27272a', cursor: 'pointer',
+            }}
+          >
+            {soundOn ? <Volume2 style={{ width: 15, height: 15, color: '#a1a1aa' }} /> : <VolumeX style={{ width: 15, height: 15, color: '#52525b' }} />}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
